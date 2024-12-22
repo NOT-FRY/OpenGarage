@@ -1,0 +1,8 @@
+rm -rf cache artifacts => per il clean
+
+npx harhat compile => compila lo smart contract
+npx hardhat node => porta su la rete hardhat di test
+npx hardhat run scripts/deploy.js --network localhost => deploya lo smart contract sulla rete e salva l'ABI nel frontend
+
+frontend/opengarage-dapp
+npm start => per startare la web app
