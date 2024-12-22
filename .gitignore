@@ -1,0 +1,49 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+.env
+ 
+#------------------------- Hardhat files
+/cache
+/artifacts
+ 
+# TypeChain files
+/typechain
+/typechain-types
+ 
+# solidity-coverage files
+/coverage
+/coverage.json
+ 
+# Hardhat Ignition default folder for deployments against a local node
+ignition/deployments/chain-31337
+
+#------------------------ React files
+
+# dependencies
+/frontend/opengarage-dapp/.pnp
+/frontend/opengarage-dapp/.pnp.js
+
+# testing
+/frontend/opengarage-dapp/coverage
+
+# production
+/frontend/opengarage-dapp/build
+
+# misc
+/frontend/opengarage-dapp/.DS_Store
+/frontend/opengarage-dapp/.env.local
+/frontend/opengarage-dapp/.env.development.local
+/frontend/opengarage-dapp/.env.test.local
+/frontend/opengarage-dapp/.env.production.local
+
+/frontend/opengarage-dapp/npm-debug.log*
+/frontend/opengarage-dapp/yarn-debug.log*
+/frontend/opengarage-dapp/yarn-error.log*
+
+
+/frontend/opengarage-dapp/node_modules
+/frontend/opengarage-dapp/src/contracts
+
+
+
+
+
