@@ -1,5 +1,7 @@
 // Importa ethers.js
 import { BrowserProvider, Contract } from "ethers";
+import FileUploader from "./FileUploader";
+import {useNavigate} from 'react-router-dom'
 
 // Configurazione del contratto
 const contractAddress = require('./contracts/OpenGarage-address.json').OpenGarageAddress;
@@ -62,8 +64,16 @@ async function getVehicleDetails(carId) {
     }
 }
 
+
+
 // Integrazione con il frontend
 function App() {
+    const navigate = useNavigate();
+
+    const handleRedirect = () => {
+        navigate('/fileUploader'); // Sostituisci "/destination" con la tua rotta
+    };
+
     const handleRegister = async () => {
         const carId = prompt("Inserisci il carId del veicolo:");
         const owner = prompt("Inserisci l'indirizzo del proprietario:");
@@ -82,6 +92,7 @@ function App() {
             <button onClick={connectWallet}>Connetti MetaMask</button>
             <button onClick={handleRegister}>Registra Veicolo</button>
             <button onClick={handleGetDetails}>Recupera Dettagli Veicolo</button>
+            <button onClick={handleRedirect}>Recupera Dettagli Veicolo</button>
         </div>
     );
 }
