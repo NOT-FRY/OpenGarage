@@ -92,7 +92,7 @@ function App() {
             <button onClick={connectWallet}>Connetti MetaMask</button>
             <button onClick={handleRegister}>Registra Veicolo</button>
             <button onClick={handleGetDetails}>Recupera Dettagli Veicolo</button>
-            <button onClick={handleRedirect}>Recupera Dettagli Veicolo</button>
+            <button onClick={handleRedirect}>Inserisci file</button>
         </div>
     );
 }
