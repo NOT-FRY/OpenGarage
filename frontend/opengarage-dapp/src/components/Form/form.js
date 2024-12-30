@@ -1,5 +1,6 @@
 import React, { useState} from "react";
 import './Form.css'
+import ipfs from "../../ipfs";
 
 function CarForm(){
     const [formData, setFormData] = useState({
@@ -23,9 +24,32 @@ function CarForm(){
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Dati inviati:', formData);
+
+        if ((formData.annoProduzione !== '') &&
+        (formData.dimensioni !== '') &&
+        (formData.marca !== '') &&
+        (formData.numeroKm !== '') &&
+        (formData.modello !== '') &&
+        (formData.numeroPorte !== '') &&
+        (formData.numeroTarga !== '') &&
+        (formData.posti !== '') &&
+        (formData.tipoCarburante !== ''))
+        {
+
+            try {
+                const json = JSON.stringify(formData, null, 2);
+                const result = await ipfs.add(json);
+                console.log('File caricato su IPFS. CID:', result.cid.toString());
+            } catch (error) {
+                console.error('Errore durante il caricamento su IPFS:', error);
+            }
+        }
+        else {
+            alert("Valorizza tutti i campi");
+        }
+
 
     };
 
