@@ -74,6 +74,10 @@ function App() {
         navigate('/fileUploader'); // Sostituisci "/destination" con la tua rotta
     };
 
+    const handleRegisterVehicle = () => {
+        navigate('/registerVehicle'); // Sostituisci "/destination" con la tua rotta
+    };
+
     const handleRegister = async () => {
         const carId = prompt("Inserisci il carId del veicolo:");
         const owner = prompt("Inserisci l'indirizzo del proprietario:");
@@ -93,6 +97,7 @@ function App() {
             <button onClick={handleRegister}>Registra Veicolo</button>
             <button onClick={handleGetDetails}>Recupera Dettagli Veicolo</button>
             <button onClick={handleRedirect}>Inserisci file</button>
+            <button onClick={handleRegisterVehicle}>Inserisci Veicolo</button>
         </div>
     );
 }
