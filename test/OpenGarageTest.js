@@ -2,71 +2,98 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("OpenGarage Smart Contract", function () {
-  let OpenGarage;
-  let openGarage;
-  let owner, manufacturer, insurer, vehicleOwner;
+  let OpenGarage, openGarage, admin, manufacturer, updater, user;
 
   beforeEach(async function () {
-    // Ottieni i conti di test
-    [owner, manufacturer, insurer, vehicleOwner] = await ethers.getSigners();
 
+    [admin, manufacturer, updater, user] = await ethers.getSigners();
     // Deploy del contratto
     openGarage = await ethers.deployContract("OpenGarage");
-    //openGarage = await OpenGarage.deploy();
-    //await openGarage.deployed();
+
   });
 
-
-  it("Registra un veicolo correttamente", async function () {
-    // Assegna il ruolo di produttore
-    //await openGarage.connect(owner).grantRole(await openGarage.MANUFACTURER_ROLE(), manufacturer.address);
-
-    const vin = "1HGCM82633A123456";
-    const cid = "QmTzQ1e9mX9vXJpyBpyTfVyxjN3PdN5aHGiUJ98jWkzDB3";
-
-    // Registra un veicolo
-    //await openGarage.connect(manufacturer).registerVehicle(vin, vehicleOwner.address, cid);
-    await openGarage.registerVehicle(vin,cid,vehicleOwner.address);
-
-    const vehicle = await openGarage.vehicles(vin);
-    expect(vehicle.owner).to.equal(vehicleOwner.address);
-    expect(vehicle.cid).to.equal(cid);
-    console.log(cid);
+  it("Should deploy the contract and set the admin", async function () {
+    const isAdmin = await openGarage.hasRole(await openGarage.DEFAULT_ADMIN_ROLE(), admin.address);
+    expect(isAdmin).to.be.true;
   });
 
-//   it("Trasferisce la proprietà di un veicolo", async function () {
-//     // Assegna il ruolo di produttore
-//     await openGarage.connect(owner).grantRole(await openGarage.MANUFACTURER_ROLE(), manufacturer.address);
+  it("Should allow admin to assign roles", async function () {
+    const MANUFACTURER_ROLE = await openGarage.MANUFACTURER_ROLE();
+    const UPDATER_ROLE = await openGarage.UPDATER_ROLE();
 
-//     const vin = "1HGCM82633A123456";
-//     const cid = "QmTzQ1e9mX9vXJpyBpyTfVyxjN3PdN5aHGiUJ98jWkzDB3";
+    await openGarage.assignRole(MANUFACTURER_ROLE, manufacturer.address);
+    await openGarage.assignRole(UPDATER_ROLE, updater.address);
 
-//     // Registra un veicolo
-//     await openGarage.connect(manufacturer).registerVehicle(vin, vehicleOwner.address, cid);
+    expect(await openGarage.hasRole(MANUFACTURER_ROLE, manufacturer.address)).to.be.true;
+    expect(await openGarage.hasRole(UPDATER_ROLE, updater.address)).to.be.true;
+  });
 
-//     // Trasferisce la proprietà
-//     const newOwner = insurer.address;
-//     await openGarage.connect(vehicleOwner).transferOwnership(vin, newOwner);
+  it("Should allow admin to revoke roles", async function () {
+    const MANUFACTURER_ROLE = await openGarage.MANUFACTURER_ROLE();
+    const UPDATER_ROLE = await openGarage.UPDATER_ROLE();
 
-//     const vehicle = await openGarage.vehicles(vin);
-//     expect(vehicle.owner).to.equal(newOwner);
-//   });
+    await openGarage.assignRole(MANUFACTURER_ROLE, manufacturer.address);
+    await openGarage.assignRole(UPDATER_ROLE, updater.address);
 
-//   it("Assegna i ruoli correttamente", async function () {
-//     // Assegna il ruolo di produttore
-//     await openGarage.connect(owner).grantRole(await openGarage.MANUFACTURER_ROLE(), manufacturer.address);
+    await openGarage.deleteRole(MANUFACTURER_ROLE, manufacturer.address);
+    await openGarage.deleteRole(UPDATER_ROLE, updater.address);
 
-//     const hasRole = await openGarage.hasRole(await openGarage.MANUFACTURER_ROLE(), manufacturer.address);
-//     expect(hasRole).to.be.true;
-//   });
+    expect(await openGarage.hasRole(MANUFACTURER_ROLE, manufacturer.address)).to.be.false;
+    expect(await openGarage.hasRole(UPDATER_ROLE, updater.address)).to.be.false;
+  });
 
-//   it("Restringe operazioni a utenti non autorizzati", async function () {
-//     const vin = "1HGCM82633A123456";
-//     const cid = "QmTzQ1e9mX9vXJpyBpyTfVyxjN3PdN5aHGiUJ98jWkzDB3";
+  it("Should emit events on registering and updating a vehicle", async function () {
+    const carId = "CAR123";
+    const cid = "exampleCID";
+    const newCid = "updatedCID";
+    const MANUFACTURER_ROLE = await openGarage.MANUFACTURER_ROLE();
+    const UPDATER_ROLE = await openGarage.UPDATER_ROLE();
+    //I ruoli si devono riassegnare in ogni metodo di test
+    await openGarage.assignRole(MANUFACTURER_ROLE, manufacturer.address);
+    await openGarage.assignRole(UPDATER_ROLE, updater.address);
 
-//     // Prova a registrare un veicolo senza il ruolo MANUFACTURER_ROLE
-//     await expect(
-//       openGarage.connect(vehicleOwner).registerVehicle(vin, vehicleOwner.address, cid)
-//     ).to.be.revertedWith("AccessControl: account");
-//   });
+    await expect(openGarage.connect(manufacturer).registerVehicle(carId,cid))
+      .to.emit(openGarage, "VehicleRegistered")
+      .withArgs(carId, cid);
+
+    await expect(openGarage.connect(updater).updateVehicle(carId, newCid))
+      .to.emit(openGarage, "VehicleUpdated")
+      .withArgs(carId, cid, newCid);
+  });
+
+  it("Should update vehicle information", async function () {
+    const carId = "CAR123";
+    const cid = "exampleCID";
+    const newCid = "updatedCID";
+    const MANUFACTURER_ROLE = await openGarage.MANUFACTURER_ROLE();
+    const UPDATER_ROLE = await openGarage.UPDATER_ROLE();
+
+    await openGarage.assignRole(MANUFACTURER_ROLE, manufacturer.address);
+    await openGarage.assignRole(UPDATER_ROLE, updater.address);
+
+    await openGarage.connect(manufacturer).registerVehicle(carId,cid)
+    await openGarage.connect(updater).updateVehicle(carId, newCid);
+
+    const vehicle = await openGarage.vehicles(carId);
+    expect(vehicle.cid).to.equal(newCid);
+  });
+
+  it("Should not allow unauthorized user to register a vehicle", async function () {
+    const carId = "CAR456";
+    const cid = "unauthorizedCID";
+
+    await expect(
+      openGarage.connect(user).registerVehicle(carId, cid)
+    ).to.be.reverted;
+  });
+
+  it("Should not allow unauthorized user to modify a vehicle", async function () {
+    const carId = "CAR456";
+    const cid = "unauthorizedCID";
+
+    await expect(
+      openGarage.connect(user).updateVehicle(carId, cid)
+    ).to.be.reverted;
+  });
+
 });
