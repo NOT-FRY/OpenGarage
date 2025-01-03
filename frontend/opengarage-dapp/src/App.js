@@ -1,11 +1,19 @@
 // Importa ethers.js
-import { BrowserProvider, Contract } from "ethers";
+import { BrowserProvider, Contract,ethers } from "ethers";
 import FileUploader from "./FileUploader";
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router-dom';
 
 // Configurazione del contratto
 const contractAddress = require('./contracts/OpenGarage-address.json').OpenGarageAddress;
 const contractABI = require('./contracts/OpenGarage.json').abi;
+
+/*Non ci sono le enum in JS, vado a mappare con stringhe poi al momento della chiamata
+ al metodo dello smart contract, vado ad ottenere il ruolo corretto direttamente dal contratto*/
+const Roles = {
+	DEFAULT_ADMIN_ROLE: "DEFAULT_ADMIN_ROLE",
+	MANUFACTURER_ROLE: "MANUFACTURER_ROLE",
+	UPDATER_ROLE: "UPDATER_ROLE"
+}
 
 // Funzione per connettere MetaMask
 async function connectWallet() {
@@ -24,7 +32,7 @@ async function connectWallet() {
 }
 
 // Funzione per registrare un veicolo
-async function registerVehicle(carId, cid, ownerAddress) {
+async function registerVehicle(carId, cid) {
     if (!window.ethereum) {
         alert("MetaMask non è installato!");
         return;
@@ -37,7 +45,15 @@ async function registerVehicle(carId, cid, ownerAddress) {
     const contract = new Contract(contractAddress, contractABI, signer);
 
     try {
-        const tx = await contract.registerVehicle(carId,cid,ownerAddress);
+
+        const address = signer.getAddress()
+        const isManufacturer = await checkRole(contract.MANUFACTURER_ROLE(), address);
+        if(!isManufacturer){
+            alert("User is not a manufacturer");
+            return;
+        }
+
+        const tx = await contract.registerVehicle(carId,cid);
         await tx.wait();
         console.log("Veicolo registrato con successo!", tx);
     } catch (error) {
@@ -64,31 +80,91 @@ async function getVehicleDetails(carId) {
     }
 }
 
+async function assignRole(role, address) {
+    if (!window.ethereum) {
+        alert("MetaMask non è installato!");
+        return;
+    }
 
+    const provider = new BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+
+    const signer = await provider.getSigner();
+    const contract = new Contract(contractAddress, contractABI, signer);
+
+    try {
+
+        const adminAddress = signer.getAddress()
+        const isAdmin = await checkRole(contract.DEFAULT_ADMIN_ROLE(), adminAddress);
+        if(!isAdmin){
+            alert("User is not an Administrator");
+            console.log("L'utente non è amministratore:",adminAddress);
+            return;
+        }
+        let contractRole;
+        switch(role){
+            case Roles.MANUFACTURER_ROLE:
+                contractRole = contract.MANUFACTURER_ROLE();
+                break;
+            case Roles.UPDATER_ROLE:
+                contractRole = contract.UPDATER_ROLE();
+                break;
+        }
+
+        const tx = await contract.assignRole(contractRole,address);
+        await tx.wait();
+        console.log("Ruolo assegnato con successo all'indirizzo ", address);
+    } catch (error) {
+        console.error("Errore l'assegnazione del ruolo:", error);
+    }
+}
+
+async function checkRole(role,address) {
+    if (!window.ethereum || !address) {
+        return false;
+    }
+
+    const provider = new BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    const contract = new Contract(contractAddress, contractABI, signer);
+
+    try {
+        return await contract.hasRole(role, address);
+    } catch (error) {
+        console.error("Errore durante la verifica del ruolo: ", error);
+        return false;
+    }
+}
 
 // Integrazione con il frontend
 function App() {
     const navigate = useNavigate();
-
+    
+    //routes
     const handleRedirect = () => {
-        navigate('/fileUploader'); // Sostituisci "/destination" con la tua rotta
+        navigate('/fileUploader');
     };
 
     const handleRegisterVehicle = () => {
-        navigate('/registerVehicle'); // Sostituisci "/destination" con la tua rotta
+        navigate('/registerVehicle'); 
     };
 
     const handleRegister = async () => {
         const carId = prompt("Inserisci il carId del veicolo:");
-        const owner = prompt("Inserisci l'indirizzo del proprietario:");
         const cid = prompt("Inserisci il CID (IPFS) del veicolo:");
-        await registerVehicle(carId, cid, owner);
+        await registerVehicle(carId, cid);
     };
 
     const handleGetDetails = async () => {
         const carId = prompt("Inserisci il carId del veicolo:");
         const vehicle = await getVehicleDetails(carId);
-        alert(`Dettagli veicolo: carId: ${vehicle.carId}, Owner: ${vehicle.owner}, CID: ${vehicle.cid}`);
+        alert(`Dettagli veicolo: carId: ${vehicle.carId}, CID: ${vehicle.cid}`);
+    };
+
+    const handleAssignRole = async () => {
+        const address = prompt("Inserisci l'indirizzo dell'utente:");
+        //TODO per adesso assegno di default manufacturer
+        await assignRole(Roles.MANUFACTURER_ROLE, address);
     };
 
     return (
@@ -98,6 +174,7 @@ function App() {
             <button onClick={handleGetDetails}>Recupera Dettagli Veicolo</button>
             <button onClick={handleRedirect}>Inserisci file</button>
             <button onClick={handleRegisterVehicle}>Inserisci Veicolo</button>
+            <button onClick={handleAssignRole}>Assegna ruolo</button>
         </div>
     );
 }
