@@ -17,7 +17,7 @@
 # Hardhat Ignition default folder for deployments against a local node
 ignition/deployments/chain-31337
 
-#------------------------ React files
+#------------------------ React frontend files
 
 # dependencies
 /frontend/opengarage-dapp/.pnp
@@ -44,6 +44,9 @@ ignition/deployments/chain-31337
 /frontend/opengarage-dapp/node_modules
 /frontend/opengarage-dapp/src/contracts
 
+#------------------------ Backend files
+
+/backend/node_modules
 
 
 
