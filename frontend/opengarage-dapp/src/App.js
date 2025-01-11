@@ -1,7 +1,7 @@
 // Importa ethers.js
-import { BrowserProvider, Contract,ethers } from "ethers";
+import { BrowserProvider, Contract } from "ethers";
 import FileUploader from "./FileUploader";
-import {useNavigate} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom'
 
 // Configurazione del contratto
 const contractAddress = require('./contracts/OpenGarage-address.json').OpenGarageAddress;
@@ -139,14 +139,14 @@ async function checkRole(role,address) {
 // Integrazione con il frontend
 function App() {
     const navigate = useNavigate();
-    
+
     //routes
     const handleRedirect = () => {
         navigate('/fileUploader');
     };
 
     const handleRegisterVehicle = () => {
-        navigate('/registerVehicle'); 
+        navigate('/registerVehicle');
     };
 
     const handleRegister = async () => {

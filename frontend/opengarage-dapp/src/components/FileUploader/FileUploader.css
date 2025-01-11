@@ -1,0 +1,80 @@
+.file-uploader {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #B0CEE2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background-color: #424048; /* Grigio scuro */
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Ombra */
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+}
+
+
+h1 {
+    font-size: 2rem;
+    color: #B0CEE2;
+    margin-bottom: 1.5rem;
+}
+
+input[type="file"] {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    cursor: pointer;
+    padding: 0.5rem;
+    border: 1px solid #45586C;
+    border-radius: 5px;
+    background-color: #1A2730;
+    color: #B0CEE2;
+}
+
+button-file {
+    background-color: #E95D2C;
+    color: #FFFFFF;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+/* Effetto hover sul bottone */
+button-file:hover {
+    background-color: #A63E1B;
+    transform: scale(1.05);
+}
+
+.cid-container {
+    margin-top: 2rem;
+    padding: 1rem;
+    border: 1px solid #45586C;
+    border-radius: 5px;
+    background-color: #1A2730; /* Sfondo blu scuro */
+    color: #B0CEE2;
+}
+
+a {
+    color: #E95D2C;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* Hover sul link */
+a:hover {
+    text-decoration: underline;
+    color: #A63E1B;
+}
