@@ -1,6 +1,7 @@
 import React, { useState} from "react";
 import './Form.css'
 import Header from "../Header/Header";
+import axios from "axios"
 
 function CarForm(){
     const [formData, setFormData] = useState({
@@ -24,9 +25,23 @@ function CarForm(){
         }));
     };
 
+    const sendDataToIpfs = async () => {
+        try{
+            const responseIPFS = await axios.post("http://localhost:3001/ipfs/upload", {formData})
+            alert(responseIPFS.data);
+        }catch (errorData){
+            alert("errore nel caricamento dei dati");
+            console.log(JSON.stringify(errorData))
+        }
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Dati inviati:', formData);
+        alert("ciao");
+        sendDataToIpfs().then(r=>{
+            console.log('Dati inviati:', formData);
+        })
+
 
     };
 
@@ -125,7 +140,7 @@ function CarForm(){
                         onChange={handleChange}
                     />
                 </div>
-                <button-form type="submit">Salva</button-form>
+                <button type={"submit"}></button>
             </form>
         </div>
     )
