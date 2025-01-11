@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import ipfs from './ipfs'; // Importa il client IPFS configurato
+import ipfs from '../../ipfs'; // Importa il client IPFS configurato
+import './FileUploader.css';
+import Header from '../Header/Header.js';
+
 
 const FileUploader = () => {
     const [file, setFile] = useState(null); // Stato per il file selezionato
@@ -28,18 +31,25 @@ const FileUploader = () => {
     };
 
     return (
-        <div>
-            <h1>Carica un file su IPFS</h1>
-            <input type="file" onChange={handleFileChange} />
-            <button onClick={uploadToIPFS}>Carica</button>
+        <>
+            <Header />
+            <div className="file-uploader">
+                <div className="container">
+                    <h1>Carica un file su IPFS</h1>
+                    <input type="file" onChange={handleFileChange} />
+                    <button onClick={uploadToIPFS}>Carica</button>
 
-            {cid && (
-                <div>
-                    <p>File caricato con successo!</p>
-                    <p>CID: <a href={`https://ipfs.io/ipfs/${cid}`} target="_blank" rel="noopener noreferrer">{cid}</a></p>
+                    {cid && (
+                        <div className="cid-container">
+                            <p>File caricato con successo!</p>
+                            <p>
+                                CID: <a href={`https://ipfs.io/ipfs/${cid}`} target="_blank" rel="noopener noreferrer">{cid}</a>
+                            </p>
+                        </div>
+                    )}
                 </div>
-            )}
-        </div>
+            </div>
+        </>
     );
 };
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import FileUploader from "./FileUploader";
+import FileUploader from "./components/FileUploader/FileUploader";
 import App from "./App";
 import CarForm from "./components/Form/form"
 
