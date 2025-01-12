@@ -5,7 +5,7 @@ const ipfsRouter = express.Router();
 // Configura IPFS
 
 const ipfs = create({
-    host: 'ancient-eel-83.telebit.io',  // Cambia con l'indirizzo del tuo nodo
+    host: 'hungry-liger-90.telebit.io',  // Cambia con l'indirizzo del tuo nodo
     port: 443,         // Porta dell'API HTTP
     protocol: 'https',   // Usa 'https' se stai usando un nodo remoto
 });
