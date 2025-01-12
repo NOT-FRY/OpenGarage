@@ -17,15 +17,15 @@ ipfsRouter.post('/upload', async (req, res) => {
 
 
 
-    if ((formData.annoProduzione !== '') &&
-        (formData.dimensioni !== '') &&
-        (formData.marca !== '') &&
-        (formData.numeroKm !== '') &&
-        (formData.modello !== '') &&
-        (formData.numeroPorte !== '') &&
-        (formData.numeroTarga !== '') &&
-        (formData.posti !== '') &&
-        (formData.tipoCarburante !== ''))
+    if ((formData.formData.annoProduzione !== '') &&
+        (formData.formData.dimensioni !== '') &&
+        (formData.formData.marca !== '') &&
+        (formData.formData.numeroKm !== '') &&
+        (formData.formData.modello !== '') &&
+        (formData.formData.numeroPorte !== '') &&
+        (formData.formData.numeroTarga !== '') &&
+        (formData.formData.posti !== '') &&
+        (formData.formData.tipoCarburante !== ''))
     {
 
         try {
