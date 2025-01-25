@@ -3,7 +3,7 @@ import { BrowserProvider, Contract } from "ethers";
 import FileUploader from "./components/FileUploader/FileUploader";
 import { useNavigate } from 'react-router-dom'
 import "./App.css";
-import Header from "./components/Header/Header.js";
+import LoginPage from "./components/Login/login"
 
 // Configurazione del contratto
 const contractAddress = require('./contracts/OpenGarage-address.json').OpenGarageAddress;
@@ -95,14 +95,7 @@ function App() {
 
     return (
         <div>
-            <Header />
-             <div className="button-container">
-                <button onClick={connectWallet}>Connetti MetaMask</button>
-                <button onClick={handleRegister}>Registra Veicolo</button>
-                <button onClick={handleGetDetails}>Recupera Dettagli Veicolo</button>
-                <button onClick={handleRedirect}>Inserisci file</button>
-                <button onClick={handleRegisterVehicle}>Inserisci Veicolo</button>
-             </div>
+            < LoginPage />
         </div>
     );
 }
