@@ -1,11 +1,19 @@
 // Importa ethers.js
-import { BrowserProvider, Contract } from "ethers";
+import {BrowserProvider, Contract, JsonRpcSigner} from "ethers";
 import FileUploader from "./components/FileUploader/FileUploader";
 import { useNavigate } from 'react-router-dom'
 import "./App.css";
 import LoginPage from "./components/Login/login"
 import {assignRole, checkRole, Roles} from "./utils/Role";
 import {contractABI, contractAddress} from "./utils/ContractUtils";
+import {useState} from "react";
+
+
+const provider = new BrowserProvider(window.ethereum);
+await provider.send("eth_requestAccounts", []);
+
+const signer = await provider.getSigner();
+const contract = new Contract(contractAddress, contractABI, signer);
 
 // Funzione per connettere MetaMask
 async function connectWallet() {
@@ -30,11 +38,7 @@ async function registerVehicle(carId, cid) {
         return;
     }
 
-    const provider = new BrowserProvider(window.ethereum);
-    await provider.send("eth_requestAccounts", []);
 
-    const signer = await provider.getSigner();
-    const contract = new Contract(contractAddress, contractABI, signer);
 
     try {
 
@@ -76,7 +80,20 @@ async function getVehicleDetails(carId) {
 
 // Integrazione con il frontend
 function App() {
+
     const navigate = useNavigate();
+
+    if (!window.ethereum) {
+        alert("MetaMask non è installato!");
+        return;
+    }
+
+
+    const [contractState, setContractState] = useState<Contract>undefined;
+    const [signerState, setSignerState] = useState<JsonRpcSigner>undefined;
+
+    setContractState(contract);
+    setSignerState(signer);
 
     //routes
     const handleRedirect = () => {
@@ -106,9 +123,7 @@ function App() {
     };
 
     return (
-        <div>
-            < LoginPage />
-        </div>
+        LoginPage(contractState, signerState)
     );
 }
 

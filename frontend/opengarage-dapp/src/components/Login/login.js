@@ -1,11 +1,14 @@
-import React from "react";
+import React, {useState} from "react";
 import Header from "../Header/Header";
 import {BrowserProvider, Contract} from "ethers";
 import {assignRole, checkRole, Roles} from "../../utils/Role";
 import {useNavigate} from "react-router-dom";
 import {contractABI, contractAddress} from "../../utils/ContractUtils";
 
-export default function LoginPage() {
+
+
+
+export default function LoginPage(contract, signer) {
     const navigate = useNavigate();
 
 // Funzione per connettere MetaMask
@@ -19,11 +22,6 @@ export default function LoginPage() {
             const accounts = await window.ethereum.request({method: "eth_requestAccounts"});
             console.log("Account connesso:", accounts[0]);
 
-            const provider = new BrowserProvider(window.ethereum);
-            await provider.send("eth_requestAccounts", []);
-
-            const signer = await provider.getSigner();
-            const contract = new Contract(contractAddress, contractABI, signer);
 
             const address = signer.getAddress()
 
