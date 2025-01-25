@@ -32,7 +32,7 @@ ipfsRouter.post('/upload', async (req, res) => {
             const json = JSON.stringify(formData, null, 2);
             const result = await ipfs.add(json);
             console.log('File caricato su IPFS. CID:', result.cid.toString());
-            res.status(200).send('File caricato su IPFS. CID:'+result.cid.toString());
+            res.status(200).send(result.cid.toString());
         } catch (error) {
             res.status(500).send("Errore nel caricamento del file su IPFS");
         }

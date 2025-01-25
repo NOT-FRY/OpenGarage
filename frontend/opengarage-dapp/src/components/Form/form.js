@@ -2,6 +2,9 @@ import React, { useState} from "react";
 import './Form.css'
 import Header from "../Header/Header";
 import axios from "axios"
+import {BrowserProvider, Contract, JsonRpcSigner} from "ethers";
+import {contractABI, contractAddress} from "../../utils/ContractUtils";
+import {checkRole} from "../../utils/Role";
 
 function CarForm(){
     const [formData, setFormData] = useState({
@@ -28,10 +31,51 @@ function CarForm(){
     const sendDataToIpfs = async () => {
         try{
             const responseIPFS = await axios.post("http://localhost:3001/ipfs/upload", {formData})
-            alert(responseIPFS.data);
+            let cid = responseIPFS.data;
+            console.log(cid)
+
+            const carId = generateCarId();
+            await registerVehicle(carId, cid);
+
         }catch (errorData){
             alert("errore nel caricamento dei dati");
             console.log(JSON.stringify(errorData))
+        }
+    }
+
+    function generateCarId() {
+        return `car-${crypto.randomUUID()}`;
+    }
+
+    async function registerVehicle(carId, cid) {
+        if (!window.ethereum) {
+            alert("MetaMask non è installato!");
+            return;
+        }
+
+        try {
+            const provider = new BrowserProvider(window.ethereum);
+            await provider.send("eth_requestAccounts", []);
+
+            const signer = await provider.getSigner();
+            const contract = new Contract(contractAddress, contractABI, signer);
+
+            const address = signer.getAddress();
+            const isManufacturer = await checkRole(contract.MANUFACTURER_ROLE(), address);
+            if(!isManufacturer){
+                alert("User is not a manufacturer");
+                return;
+            }
+            console.log("Sto registrando veicolo su blockchain...", carId, cid);
+            const tx = await contract.registerVehicle(carId,cid);
+            await tx.wait();
+            console.log("Veicolo registrato con successo su blockchain!", tx);
+
+            //TODO da rimuovere
+            const vehicle = await contract.vehicles(carId);
+            console.log("Dettagli veicolo su blockchain:", vehicle);
+        } catch (error) {
+            console.error("Errore durante la registrazione del veicolo su blockchain:", error);
         }
     }
 
