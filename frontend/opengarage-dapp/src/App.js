@@ -1,19 +1,11 @@
 // Importa ethers.js
 import {BrowserProvider, Contract, JsonRpcSigner} from "ethers";
-import FileUploader from "./components/FileUploader/FileUploader";
-import { useNavigate } from 'react-router-dom'
+import {useNavigate} from 'react-router-dom'
 import "./App.css";
 import LoginPage from "./components/Login/login"
-import {assignRole, checkRole, Roles} from "./utils/Role";
 import {contractABI, contractAddress} from "./utils/ContractUtils";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
-
-const provider = new BrowserProvider(window.ethereum);
-await provider.send("eth_requestAccounts", []);
-
-const signer = await provider.getSigner();
-const contract = new Contract(contractAddress, contractABI, signer);
 
 // Funzione per connettere MetaMask
 async function connectWallet() {
@@ -31,7 +23,28 @@ async function connectWallet() {
     }
 }
 
+async function initBlockchain() {
+    try {
+        const provider = new BrowserProvider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+
+        const signer = await provider.getSigner();
+        const contract = new Contract(contractAddress, contractABI, signer);
+
+        return {
+            provider: provider,
+            contract: contract,
+            signer: signer,
+        };
+    } catch (error) {
+        console.error("Errore durante l'inizializzazione della blockchain:", error);
+        return null; // Restituisci null in caso di errore
+    }
+}
+
+
 // Funzione per registrare un veicolo
+/*
 async function registerVehicle(carId, cid) {
     if (!window.ethereum) {
         alert("MetaMask non è installato!");
@@ -57,6 +70,8 @@ async function registerVehicle(carId, cid) {
     }
 }
 
+
+
 // Funzione per ottenere i dettagli di un veicolo
 async function getVehicleDetails(carId) {
     if (!window.ethereum) {
@@ -64,8 +79,6 @@ async function getVehicleDetails(carId) {
         return;
     }
 
-    const provider = new BrowserProvider(window.ethereum);
-    const contract = new Contract(contractAddress, contractABI, provider);
 
     try {
         const vehicle = await contract.vehicles(carId);
@@ -76,25 +89,33 @@ async function getVehicleDetails(carId) {
     }
 }
 
-
+*/
 
 // Integrazione con il frontend
 function App() {
 
+    const [providerState, setProvideState] = useState();
+    const [signerState, setSignerState] = useState();
+    const [contractState, setContractState] = useState();
+
+    useEffect(() => {
+        console.log("ciao");
+        if (window.ethereum) {
+            initBlockchain().then((item) => {
+                if (item) {
+                    setContractState(item.contract);
+                    setSignerState(item.signer);
+                    setProvideState(item.provider);
+                } else {
+                    console.error("Impossibile inizializzare la blockchain. Controlla MetaMask o il contratto.");
+                }
+            });
+        }
+    }, []);
+
+
     const navigate = useNavigate();
-
-    if (!window.ethereum) {
-        alert("MetaMask non è installato!");
-        return;
-    }
-
-
-    const [contractState, setContractState] = useState<Contract>undefined;
-    const [signerState, setSignerState] = useState<JsonRpcSigner>undefined;
-
-    setContractState(contract);
-    setSignerState(signer);
-
+/*
     //routes
     const handleRedirect = () => {
         navigate('/fileUploader'); // Sostituisci "/destination" con la tua rotta
@@ -120,10 +141,10 @@ function App() {
         const address = prompt("Inserisci l'indirizzo dell'utente:");
         //TODO per adesso assegno di default manufacturer
         await assignRole(Roles.MANUFACTURER_ROLE, address);
-    };
+    }; */
 
     return (
-        LoginPage(contractState, signerState)
+        LoginPage(contractState,signerState)
     );
 }
 

@@ -4,6 +4,7 @@ import {BrowserProvider, Contract} from "ethers";
 import {assignRole, checkRole, Roles} from "../../utils/Role";
 import {useNavigate} from "react-router-dom";
 import {contractABI, contractAddress} from "../../utils/ContractUtils";
+import {JsonRpcSigner} from "ethers";
 
 
 
@@ -34,7 +35,12 @@ export default function LoginPage(contract, signer) {
             }else{
                 const isManufacturer = await checkRole(contract.MANUFACTURER_ROLE(), address);
                 if(isManufacturer){
-                    navigate('/fileUploader');
+                    navigate('/registerVehicle');
+                }else{
+                    const isUpdater = await checkRole(contract.UPDATER_ROLE, address);
+                    if(isUpdater){
+                        navigate('/registerVehicle');
+                    }
                 }
             }
 
