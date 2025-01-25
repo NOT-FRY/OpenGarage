@@ -4,18 +4,8 @@ import FileUploader from "./components/FileUploader/FileUploader";
 import { useNavigate } from 'react-router-dom'
 import "./App.css";
 import LoginPage from "./components/Login/login"
-
-// Configurazione del contratto
-const contractAddress = require('./contracts/OpenGarage-address.json').OpenGarageAddress;
-const contractABI = require('./contracts/OpenGarage.json').abi;
-
-/*Non ci sono le enum in JS, vado a mappare con stringhe poi al momento della chiamata
- al metodo dello smart contract, vado ad ottenere il ruolo corretto direttamente dal contratto*/
-const Roles = {
-	DEFAULT_ADMIN_ROLE: "DEFAULT_ADMIN_ROLE",
-	MANUFACTURER_ROLE: "MANUFACTURER_ROLE",
-	UPDATER_ROLE: "UPDATER_ROLE"
-}
+import {assignRole, checkRole, Roles} from "./utils/Role";
+import {contractABI, contractAddress} from "./utils/ContractUtils";
 
 // Funzione per connettere MetaMask
 async function connectWallet() {
@@ -82,61 +72,7 @@ async function getVehicleDetails(carId) {
     }
 }
 
-async function assignRole(role, address) {
-    if (!window.ethereum) {
-        alert("MetaMask non è installato!");
-        return;
-    }
 
-    const provider = new BrowserProvider(window.ethereum);
-    await provider.send("eth_requestAccounts", []);
-
-    const signer = await provider.getSigner();
-    const contract = new Contract(contractAddress, contractABI, signer);
-
-    try {
-
-        const adminAddress = signer.getAddress()
-        const isAdmin = await checkRole(contract.DEFAULT_ADMIN_ROLE(), adminAddress);
-        if(!isAdmin){
-            alert("User is not an Administrator");
-            console.log("L'utente non è amministratore:",adminAddress);
-            return;
-        }
-        let contractRole;
-        switch(role){
-            case Roles.MANUFACTURER_ROLE:
-                contractRole = contract.MANUFACTURER_ROLE();
-                break;
-            case Roles.UPDATER_ROLE:
-                contractRole = contract.UPDATER_ROLE();
-                break;
-        }
-
-        const tx = await contract.assignRole(contractRole,address);
-        await tx.wait();
-        console.log("Ruolo assegnato con successo all'indirizzo ", address);
-    } catch (error) {
-        console.error("Errore l'assegnazione del ruolo:", error);
-    }
-}
-
-async function checkRole(role,address) {
-    if (!window.ethereum || !address) {
-        return false;
-    }
-
-    const provider = new BrowserProvider(window.ethereum);
-    const signer = await provider.getSigner();
-    const contract = new Contract(contractAddress, contractABI, signer);
-
-    try {
-        return await contract.hasRole(role, address);
-    } catch (error) {
-        console.error("Errore durante la verifica del ruolo: ", error);
-        return false;
-    }
-}
 
 // Integrazione con il frontend
 function App() {
