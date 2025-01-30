@@ -190,7 +190,7 @@ function CarForm(){
 
 
             <form className={"form"}>
-                <div className="form-title">Inserisci Veicolo</div>
+                <div className="form-title">Indirizzo Proprietario</div>
                 <div className="form-group">
                     <label htmlFor="Indirizzo proprietario">Indirizzo Proprietario:</label>
                     <input
