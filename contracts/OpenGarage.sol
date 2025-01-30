@@ -16,6 +16,9 @@ contract OpenGarage is AccessControl {
     struct Vehicle {
         string carId; // Identificatore del veicolo sulla DApp
         string cid; // Content Identifier per IPFS
+        address owner; //questo è il proprietario attuale
+        address pendingBuyer; // acquirente in attesa
+        bool buyerApproved; // boolean se l'acquirente ha accettato
     }
 
     constructor(){
@@ -29,6 +32,8 @@ contract OpenGarage is AccessControl {
     event VehicleRegistered(string carId, string cid);
     event OwnershipTransferred(string carId, address oldOwner, address newOwner);
     event VehicleUpdated(string carId,string oldCID,string newCID);
+    event TransferRequested(string carId, address seller, address buyer);
+    event TransferApproved(string carId, address newOwner);
 
     // Funzione per assegnare un ruolo
     function assignRole(bytes32 role, address account) public onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -41,9 +46,9 @@ contract OpenGarage is AccessControl {
     }
 
     // Funzione per registrare un nuovo veicolo (solo per produttori)
-    function registerVehicle(string memory carId, string memory cid) public onlyRole(MANUFACTURER_ROLE){
+    function registerVehicle(string memory carId, string memory cid, address owner) public onlyRole(MANUFACTURER_ROLE){
         require(bytes(vehicles[carId].carId).length == 0, "Veicolo gia' registrato");
-        vehicles[carId] = Vehicle(carId, cid);
+        vehicles[carId] = Vehicle(carId, cid, owner,address(0), false);
         emit VehicleRegistered(carId, cid);
     }
 
@@ -70,6 +75,41 @@ contract OpenGarage is AccessControl {
     //     require(bytes(vehicles[carId].carId).length != 0, "Veicolo non trovato");
     //     return vehicles[carId].owner;
     // }
+
+    //funzione per richiedere il trasferimento
+    function requestVehicle(string memory carId, address buyer) public {
+        require(bytes(vehicles[carId].carId).length != 0, "Veicolo non trovato");
+        Vehicle storage vehicle = vehicles[carId];
+        require(vehicle.owner == msg.sender, "Solo il proprietario puo trasferire");
+        require(buyer != address(0), "Indirizzo non valido");
+
+        vehicle.pendingBuyer = buyer;
+
+        vehicle.buyerApproved = false;
+        emit TransferRequested(carId, msg.sender, buyer);
+    }
+
+    //funzione per approvare il trasferimento
+    function approveTransfer(string memory carId, string memory newCID) public{
+        require(bytes(vehicles[carId].carId).length != 0, "Veicolo non trovato");
+        Vehicle storage vehicle = vehicles[carId];
+        require(vehicle.pendingBuyer == msg.sender, "Non sei colui che compra il veicolo");
+        require(!vehicle.buyerApproved, "Trasferimento gia approvato");
+
+        vehicle.buyerApproved = true;
+
+        // Se entrambe le parti hanno firmato, si completa il trasferimento
+        if (vehicle.buyerApproved) {
+            address oldOwner = vehicle.owner;
+            vehicle.owner = msg.sender;
+            vehicle.pendingBuyer = address(0);
+            vehicle.buyerApproved = false;
+            vehicle.cid = newCID;
+
+            emit TransferApproved(carId, msg.sender);
+    }
+    }
+
 
     // Funzione per recuperare il CID di un veicolo
     function getCidByCarId(string memory carId) public view returns (string memory){

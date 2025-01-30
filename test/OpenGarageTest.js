@@ -2,11 +2,11 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("OpenGarage Smart Contract", function () {
-  let OpenGarage, openGarage, admin, manufacturer, updater, user;
+  let OpenGarage, openGarage, admin, manufacturer, updater, user, seller, buyer;
 
   beforeEach(async function () {
 
-    [admin, manufacturer, updater, user] = await ethers.getSigners();
+    [admin, manufacturer, updater, user, seller, buyer] = await ethers.getSigners();
     // Deploy del contratto
     openGarage = await ethers.deployContract("OpenGarage");
 
@@ -52,7 +52,7 @@ describe("OpenGarage Smart Contract", function () {
     await openGarage.assignRole(MANUFACTURER_ROLE, manufacturer.address);
     await openGarage.assignRole(UPDATER_ROLE, updater.address);
 
-    await expect(openGarage.connect(manufacturer).registerVehicle(carId,cid))
+    await expect(openGarage.connect(manufacturer).registerVehicle(carId,cid,seller))
       .to.emit(openGarage, "VehicleRegistered")
       .withArgs(carId, cid);
 
@@ -71,7 +71,7 @@ describe("OpenGarage Smart Contract", function () {
     await openGarage.assignRole(MANUFACTURER_ROLE, manufacturer.address);
     await openGarage.assignRole(UPDATER_ROLE, updater.address);
 
-    await openGarage.connect(manufacturer).registerVehicle(carId,cid)
+    await openGarage.connect(manufacturer).registerVehicle(carId, cid, seller)
     await openGarage.connect(updater).updateVehicle(carId, newCid);
 
     const vehicle = await openGarage.vehicles(carId);
@@ -83,7 +83,7 @@ describe("OpenGarage Smart Contract", function () {
     const cid = "unauthorizedCID";
 
     await expect(
-      openGarage.connect(user).registerVehicle(carId, cid)
+      openGarage.connect(user).registerVehicle(carId, cid, seller)
     ).to.be.reverted;
   });
 
@@ -95,5 +95,51 @@ describe("OpenGarage Smart Contract", function () {
       openGarage.connect(user).updateVehicle(carId, cid)
     ).to.be.reverted;
   });
+
+  it("Dovrebbe permettere al venditore di avviare il trasferimento", async function () {
+    const carId = "CAR123";
+    const cid = "exampleCID";
+
+    // Assegna i ruoli necessari
+    const MANUFACTURER_ROLE = await openGarage.MANUFACTURER_ROLE();
+    await openGarage.assignRole(MANUFACTURER_ROLE, seller.address);
+
+    // Registra il veicolo con il seller come proprietario
+    await openGarage.connect(seller).registerVehicle(carId, cid, seller);
+
+    // Ora il seller può avviare il trasferimento
+    await openGarage.connect(seller).requestVehicle(carId, buyer.address);
+
+    // Controlliamo se il pendingBuyer è stato aggiornato correttamente
+    const vehicle = await openGarage.vehicles(carId);
+    expect(vehicle.pendingBuyer).to.equal(buyer.address);
+  });
+
+
+  it("L'acquirente può approvare il trasferimento", async function () {
+    const carId = "CAR123";
+    const cid = "exampleCID";
+
+    // Assegna i ruoli
+    const MANUFACTURER_ROLE = await openGarage.MANUFACTURER_ROLE();
+    await openGarage.assignRole(MANUFACTURER_ROLE, seller.address);
+
+    // Registra il veicolo con seller come proprietario
+    await openGarage.connect(seller).registerVehicle(carId, cid, seller);
+
+    // Il seller avvia la richiesta di trasferimento
+    await openGarage.connect(seller).requestVehicle(carId, buyer.address);
+
+    // L'acquirente approva il trasferimento
+    await openGarage.connect(buyer).approveTransfer(carId, cid);
+
+    // Ora controlliamo se il proprietario è cambiato
+    const vehicle = await openGarage.vehicles(carId);
+    expect(vehicle.owner).to.equal(buyer.address);
+  });
+
+
+
+
 
 });

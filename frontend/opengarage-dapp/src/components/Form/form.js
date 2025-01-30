@@ -20,6 +20,8 @@ function CarForm(){
         dimensioni: ''
     });
 
+    const [owner, setOwner] = useState('');
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
@@ -67,7 +69,7 @@ function CarForm(){
                 return;
             }
             console.log("Sto registrando veicolo su blockchain...", carId, cid);
-            const tx = await contract.registerVehicle(carId,cid);
+            const tx = await contract.registerVehicle(carId,cid, owner);
             await tx.wait();
             console.log("Veicolo registrato con successo su blockchain!", tx);
 
@@ -91,11 +93,11 @@ function CarForm(){
 
     return (
         <div>
-            <Header />
+            <Header/>
             <form onSubmit={handleSubmit} className={"form"}>
                 <div className="form-title">Inserisci Veicolo</div>
                 <div className="form-group">
-                     <label htmlFor="numeroTarga">Numero di targa:</label>
+                    <label htmlFor="numeroTarga">Numero di targa:</label>
                     <input
                         type="text"
                         id="numeroTarga"
@@ -186,6 +188,24 @@ function CarForm(){
                 </div>
                 <button type={"submit"}></button>
             </form>
+
+
+            <form className={"form"}>
+                <div className="form-title">Inserisci Veicolo</div>
+                <div className="form-group">
+                    <label htmlFor="Indirizzo proprietario">Indirizzo Proprietario:</label>
+                    <input
+                        type="text"
+                        id="numeroTarga"
+                        name="numeroTarga"
+                        value={owner}
+                        onChange={(e)=>{
+                            setOwner(e.target.value);
+                        }}
+                    />
+                </div>
+            </form>
+
         </div>
     )
 }
