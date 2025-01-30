@@ -33,15 +33,20 @@ export default function LoginPage(contract, signer) {
                 await assignRole(Roles.MANUFACTURER_ROLE, address);
 
             }else{
+                console.log("verifico ruolo...");
                 const isManufacturer = await checkRole(contract.MANUFACTURER_ROLE(), address);
                 if(isManufacturer){
                     navigate('/registerVehicle');
                 }else{
-                    const isUpdater = await checkRole(contract.UPDATER_ROLE, address);
+                    const isUpdater = await checkRole(contract.UPDATER_ROLE(), address);
                     if(isUpdater){
                         navigate('/registerVehicle');
+                    }else{
+                        console.log("Ruolo non assegnato");
                     }
                 }
+
+
             }
 
 

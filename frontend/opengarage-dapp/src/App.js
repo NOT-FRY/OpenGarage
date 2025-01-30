@@ -99,7 +99,6 @@ function App() {
     const [contractState, setContractState] = useState();
 
     useEffect(() => {
-        console.log("ciao");
         if (window.ethereum) {
             initBlockchain().then((item) => {
                 if (item) {

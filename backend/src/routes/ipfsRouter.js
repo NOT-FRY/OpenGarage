@@ -15,8 +15,6 @@ ipfsRouter.post('/upload', async (req, res) => {
     console.log("DATI ",req.body);
     const formData = req.body;
 
-
-
     if ((formData.formData.annoProduzione !== '') &&
         (formData.formData.dimensioni !== '') &&
         (formData.formData.marca !== '') &&
@@ -35,6 +33,27 @@ ipfsRouter.post('/upload', async (req, res) => {
             res.status(200).send(result.cid.toString());
         } catch (error) {
             res.status(500).send("Errore nel caricamento del file su IPFS");
+        }
+    }
+    else {
+        res.status(422).send("Parametri errati");
+    }
+});
+ipfsRouter.get('/getVehicle', async (req, res) => {
+    const cid = req.query.cid;
+    console.log("CID richiesta:",cid);
+    const formData = req.body;
+    if(cid){
+        try {
+            const stream = ipfs.cat(cid); // Recupera il contenuto dal CID
+            let data = "";
+            for await (const chunk of stream) {
+                data += new TextDecoder().decode(chunk);
+            }
+            console.log("Dati recuperati:", data);
+            res.status(200).send(data);
+        } catch (error) {
+            res.status(500).send("Errore nel recupero del file dall'IPFS");
         }
     }
     else {

@@ -5,8 +5,11 @@ import axios from "axios"
 import {BrowserProvider, Contract, JsonRpcSigner} from "ethers";
 import {contractABI, contractAddress} from "../../utils/ContractUtils";
 import {checkRole} from "../../utils/Role";
+import {useNavigate} from "react-router-dom";
 
 function CarForm(){
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         idVeicolo: '',
         numeroTarga: '',
@@ -34,7 +37,7 @@ function CarForm(){
         try{
             const responseIPFS = await axios.post("http://localhost:3001/ipfs/upload", {formData})
             let cid = responseIPFS.data;
-            console.log(cid)
+            console.log("cid:",cid)
 
             const carId = generateCarId();
             await registerVehicle(carId, cid);
@@ -71,11 +74,8 @@ function CarForm(){
             console.log("Sto registrando veicolo su blockchain...", carId, cid);
             const tx = await contract.registerVehicle(carId,cid, owner);
             await tx.wait();
-            console.log("Veicolo registrato con successo su blockchain!", tx);
-
-            //TODO da rimuovere
-            const vehicle = await contract.vehicles(carId);
-            console.log("Dettagli veicolo su blockchain:", vehicle);
+            alert("Veicolo registrato con successo su blockchain!");
+            navigate('/vehicleDetails');
         } catch (error) {
             console.error("Errore durante la registrazione del veicolo su blockchain:", error);
         }
@@ -83,7 +83,6 @@ function CarForm(){
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        alert("ciao");
         sendDataToIpfs().then(r=>{
             console.log('Dati inviati:', formData);
         })
