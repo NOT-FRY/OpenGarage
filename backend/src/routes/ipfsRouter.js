@@ -5,7 +5,7 @@ const ipfsRouter = express.Router();
 // Configura IPFS
 
 const ipfs = create({
-    host: 't-vs8cvaud.tunn.dev',  // Cambia con l'indirizzo del tuo nodo
+    host: 't-wuypew8r.tunn.dev',  // Cambia con l'indirizzo del tuo nodo
     port: 443,         // Porta dell'API HTTP
     protocol: 'https',   // Usa 'https' se stai usando un nodo remoto
 });
