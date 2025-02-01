@@ -42,7 +42,7 @@ export default function LoginPage(contract, signer) {
                     if(isUpdater){
                         navigate('/registerVehicle');
                     }else{
-                        console.log("Ruolo non assegnato");
+                        navigate('/homePageUser');
                     }
                 }
 

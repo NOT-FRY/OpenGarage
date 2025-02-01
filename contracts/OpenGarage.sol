@@ -21,6 +21,8 @@ contract OpenGarage is AccessControl {
         bool buyerApproved; // boolean se l'acquirente ha accettato
     }
 
+
+
     constructor(){
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);//Di Open zeppelin, può gestire tutti i ruoli
     }
@@ -34,6 +36,7 @@ contract OpenGarage is AccessControl {
     event VehicleUpdated(string carId,string oldCID,string newCID);
     event TransferRequested(string carId, address seller, address buyer);
     event TransferApproved(string carId, address newOwner);
+    event VehiclePending(address newOwner);
 
     // Funzione per assegnare un ruolo
     function assignRole(bytes32 role, address account) public onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -93,8 +96,8 @@ contract OpenGarage is AccessControl {
     function approveTransfer(string memory carId, string memory newCID) public{
         require(bytes(vehicles[carId].carId).length != 0, "Veicolo non trovato");
         Vehicle storage vehicle = vehicles[carId];
-        require(vehicle.pendingBuyer == msg.sender, "Non sei colui che compra il veicolo");
         require(!vehicle.buyerApproved, "Trasferimento gia approvato");
+        require(vehicle.pendingBuyer == msg.sender, "Non sei colui che compra il veicolo");
 
         vehicle.buyerApproved = true;
 
@@ -109,6 +112,8 @@ contract OpenGarage is AccessControl {
             emit TransferApproved(carId, msg.sender);
     }
     }
+
+
 
 
     // Funzione per recuperare il CID di un veicolo

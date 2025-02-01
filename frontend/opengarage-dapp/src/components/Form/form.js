@@ -93,6 +93,23 @@ function CarForm(){
     return (
         <div>
             <Header/>
+
+            <form className={"form"}>
+                <div className="form-title">Indirizzo Proprietario</div>
+                <div className="form-group">
+                    <label htmlFor="Indirizzo proprietario">Indirizzo Proprietario:</label>
+                    <input
+                        type="text"
+                        id="numeroTarga"
+                        name="numeroTarga"
+                        value={owner}
+                        onChange={(e) => {
+                            setOwner(e.target.value);
+                        }}
+                    />
+                </div>
+            </form>
+
             <form onSubmit={handleSubmit} className={"form"}>
                 <div className="form-title">Inserisci Veicolo</div>
                 <div className="form-group">
@@ -185,25 +202,9 @@ function CarForm(){
                         onChange={handleChange}
                     />
                 </div>
-                <button type={"submit"}></button>
+                <button type={"submit"}>Inserisci Veicolo</button>
             </form>
 
-
-            <form className={"form"}>
-                <div className="form-title">Indirizzo Proprietario</div>
-                <div className="form-group">
-                    <label htmlFor="Indirizzo proprietario">Indirizzo Proprietario:</label>
-                    <input
-                        type="text"
-                        id="numeroTarga"
-                        name="numeroTarga"
-                        value={owner}
-                        onChange={(e)=>{
-                            setOwner(e.target.value);
-                        }}
-                    />
-                </div>
-            </form>
 
         </div>
     )

@@ -4,6 +4,7 @@ import FileUploader from "./components/FileUploader/FileUploader";
 import App from "./App";
 import CarForm from "./components/Form/form"
 import VehicleDetails from "./components/VehicleDetails/vehicleDetails"
+import HomePageUser from "./components/HomePageUser/homePageUser"
 
 const RoutesConfig = () => {
     return (
@@ -13,6 +14,7 @@ const RoutesConfig = () => {
                 <Route path="/fileUploader" element={<FileUploader />} />
                 <Route path="/registerVehicle" element={<CarForm />} />
                 <Route path="/vehicleDetails" element={<VehicleDetails />} />
+                <Route path="/homePageUser" element={<HomePageUser />} />
             </Routes>
         </Router>
     );
