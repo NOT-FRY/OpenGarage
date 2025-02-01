@@ -6,6 +6,7 @@ import { BrowserProvider, Contract } from "ethers";
 import { contractABI, contractAddress } from "../../utils/ContractUtils";
 import { useNavigate } from "react-router-dom";
 import {checkRole} from "../../utils/Role";
+import {getVehicleDetails, sendDataToIpfs} from "../../utils/VehicleUtils";
 
 function HomePageUser() {
     const [carId, setCarId] = useState("");
@@ -100,7 +101,6 @@ function HomePageUser() {
             alert("MetaMask non è installato!");
             return;
         }
-        console.log("sono qui");
         try {
             const provider = new BrowserProvider(window.ethereum);
             await provider.send("eth_requestAccounts", []);
@@ -118,7 +118,7 @@ function HomePageUser() {
                 setContract(contract);
                 const tx = await contract.requestVehicle(carId, newOwner);
                 await tx.wait();
-                alert("Trasferimento approvato!");
+                alert("Richiesta di trasferimento approvata!");
             }else{
                 alert("User is a special User");
             }
@@ -150,9 +150,18 @@ function HomePageUser() {
             if (!isADMIN && !isManufacturer && !isUpdater){
                 setSigner(signer);
                 setContract(contract);
-                const tx = await contract.approveTransfer(carIdForApprove, generateCarId());
-                await tx.wait();
-                alert("Trasferimento approvato!");
+
+                const vehicle = await getVehicleDetails(contract,carIdForApprove);
+                if(vehicle){
+                    vehicle.formData.numeroProprietari += 1; // Incrementa il numero di proprietari
+                    const newCID = await sendDataToIpfs(vehicle.formData);
+                    if(newCID){
+                        const tx = await contract.approveTransfer(carIdForApprove, newCID);
+                        await tx.wait();
+                        alert("Trasferimento approvato!");
+                    }
+                }
+
             }else{
                 alert("User is a special User");
             }

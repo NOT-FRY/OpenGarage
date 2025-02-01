@@ -5,54 +5,38 @@ import {BrowserProvider, Contract} from "ethers";
 import {contractABI, contractAddress} from "../../utils/ContractUtils";
 import {checkRole} from "../../utils/Role";
 import {useNavigate} from "react-router-dom";
- const VehicleDetails = ({ contract }) => {
+import {getVehicleDetails} from "../../utils/VehicleUtils";
+
+
+const VehicleDetails = ({ contract }) => {
      const [carId, setCarId] = useState("");
      const [vehicle, setVehicle] = useState(null);
      const [loading, setLoading] = useState(false);
 
+    async function getVehicle() {
+        try {
+            setLoading(true);
+            if (!window.ethereum) {
+                alert("MetaMask non è installato!");
+                return;
+            }
 
-     async function getVehicleDetails() {
-         try {
-             setLoading(true);
-             console.log("carID:",carId);
-             const cid = await getVehicleCID(carId);
-             const requestURL = "http://localhost:3001/ipfs/getVehicle?cid=" + cid;
-             const responseIPFS = await axios.get(requestURL);
-             if (responseIPFS.status === 200) {
-                 console.log("Dati ricevuti dal backend:", responseIPFS.data);
-                 setVehicle(responseIPFS.data.formData); // Aggiorna lo state con i dati ricevuti
-             } else {
-                 console.log("Errore nel server backend:", responseIPFS);
-             }
+            const provider = new BrowserProvider(window.ethereum);
+            await provider.send("eth_requestAccounts", []);
 
-         } catch (error) {
-             console.error("Errore durante il recupero dei dettagli del veicolo:", error);
-         } finally {
+            const signer = await provider.getSigner();
+            const contract = new Contract(contractAddress, contractABI, signer);
+
+            const data = await getVehicleDetails(contract,carId);
+            setVehicle(data.formData);
+
+        } catch (error) {
+            console.error("Errore durante il recupero dei dettagli del veicolo:", error);
+        } finally {
             setLoading(false);
-         }
-     };
+        }
+    };
 
-     async function getVehicleCID(carId){
-         if (!window.ethereum) {
-             alert("MetaMask non è installato!");
-             return;
-         }
-
-         try {
-             const provider = new BrowserProvider(window.ethereum);
-             await provider.send("eth_requestAccounts", []);
-
-             const signer = await provider.getSigner();
-             const contract = new Contract(contractAddress, contractABI, signer);
-
-             const vehicle = await contract.vehicles(carId);
-             console.log("Dettagli veicolo da blockchain:", vehicle);
-             return vehicle.cid;
-         } catch (error) {
-             console.error("Errore durante il recupero del cid dalla blockchain:", error);
-         }
-         return null;
-     }
      return (
          <div className="container">
             <h2>Dettagli Veicolo</h2>
@@ -63,7 +47,7 @@ import {useNavigate} from "react-router-dom";
                     value={carId}
                     onChange={(e) => setCarId(e.target.value)}
                 />
-                <button onClick={getVehicleDetails} disable={loading}>
+                <button onClick={getVehicle} disable={loading}>
                     {loading ? "Caricamento..." : "Cerca Veicolo"}
                 </button>
             </div>
@@ -80,6 +64,7 @@ import {useNavigate} from "react-router-dom";
                      <p><strong>Tipo carburante:</strong> {vehicle.tipoCarburante || "N/A"}</p>
                      <p><strong>Numero km:</strong> {vehicle.numeroKm || "N/A"}</p>
                      <p><strong>dimensioni:</strong> {vehicle.dimensioni || "N/A"}</p>
+                     <p><strong>Numero proprietari precedenti:</strong> {vehicle.numeroProprietari || 0 }</p>
                  </div>
              )}
 

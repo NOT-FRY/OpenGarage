@@ -55,6 +55,7 @@ ipfsRouter.get('/getVehicle', async (req, res) => {
             res.status(200).send(data);
         } catch (error) {
             res.status(500).send("Errore nel recupero del file dall'IPFS");
+            console.log(error);
         }
     }
     else {
