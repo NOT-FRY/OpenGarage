@@ -59,7 +59,7 @@ export async function assignRole(role, address) {
 
         const tx = await contract.assignRole(contractRole,address);
         await tx.wait();
-        alert("Ruolo assegnato con successo all'indirizzo ${address}");
+        alert("Ruolo assegnato con successo!");
     } catch (error) {
         console.error("Errore l'assegnazione del ruolo:", error);
     }

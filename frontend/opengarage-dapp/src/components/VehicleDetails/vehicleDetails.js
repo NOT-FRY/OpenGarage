@@ -65,6 +65,25 @@ const VehicleDetails = ({ contract }) => {
                      <p><strong>Numero km:</strong> {vehicle.numeroKm || "N/A"}</p>
                      <p><strong>dimensioni:</strong> {vehicle.dimensioni || "N/A"}</p>
                      <p><strong>Numero proprietari precedenti:</strong> {vehicle.numeroProprietari || 0 }</p>
+
+                     {vehicle.manutenzioni && vehicle.manutenzioni.length > 0 ? (
+                         <div className="maintenance-history">
+                             <h3>Storico Manutenzioni</h3>
+                             <ul>
+                                 {vehicle.manutenzioni.map((manutenzione, index) => (
+                                     <li key={index}>
+                                         <p><strong>Data:</strong> {manutenzione.data}</p>
+                                         <p><strong>Tipo di intervento:</strong> {manutenzione.tipoServizio}</p>
+                                         <p><strong>Costo:</strong> {manutenzione.costo}€</p>
+                                         <p><strong>Note:</strong> {manutenzione.note || "Nessuna"}</p>
+                                     </li>
+                                 ))}
+                             </ul>
+                         </div>
+                     ) : (
+                         <p><strong>Storico Manutenzioni:</strong> Nessuna manutenzione registrata</p>
+                     )}
+
                  </div>
              )}
 

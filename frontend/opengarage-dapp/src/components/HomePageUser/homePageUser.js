@@ -75,13 +75,6 @@ function HomePageUser() {
         }
     }; */
 
-
-
-    function generateCarId() {
-        return `car-${crypto.randomUUID()}`;
-    }
-
-
     const onSubmitRequest = (e) =>{
         e.preventDefault();
         handleTransferRequest().then(r=>{
@@ -108,9 +101,9 @@ function HomePageUser() {
             const signer = await provider.getSigner();
             const contract = new Contract(contractAddress, contractABI, signer);
 
-            const isADMIN = await checkRole(contract.DEFAULT_ADMIN_ROLE, signer );
-            const isManufacturer = await checkRole(contract.MANUFACTURER_ROLE, signer );
-            const isUpdater = await checkRole(contract.UPDATER_ROLE, signer);
+            const isADMIN = await checkRole(contract.DEFAULT_ADMIN_ROLE(), signer );
+            const isManufacturer = await checkRole(contract.MANUFACTURER_ROLE(), signer );
+            const isUpdater = await checkRole(contract.UPDATER_ROLE(), signer);
 
 
             if (!isADMIN && !isManufacturer && !isUpdater){
@@ -143,9 +136,9 @@ function HomePageUser() {
             const signer = await provider.getSigner();
             const contract = new Contract(contractAddress, contractABI, signer);
 
-            const isADMIN = await checkRole(contract.DEFAULT_ADMIN_ROLE, signer );
-            const isManufacturer = await checkRole(contract.MANUFACTURER_ROLE, signer );
-            const isUpdater = await checkRole(contract.UPDATER_ROLE, signer);
+            const isADMIN = await checkRole(contract.DEFAULT_ADMIN_ROLE(), signer );
+            const isManufacturer = await checkRole(contract.MANUFACTURER_ROLE(), signer );
+            const isUpdater = await checkRole(contract.UPDATER_ROLE(), signer);
 
             if (!isADMIN && !isManufacturer && !isUpdater){
                 setSigner(signer);
