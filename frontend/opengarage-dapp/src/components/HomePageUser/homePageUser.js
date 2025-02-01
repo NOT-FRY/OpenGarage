@@ -170,8 +170,8 @@ function HomePageUser() {
                 width: "50%",  // Imposta una larghezza per il div
                 margin: "auto", // Lo centra orizzontalmente
                 textAlign: "center", // Centra il testo all'interno
-                border: "1px solid black", // Solo per vedere i bordi
-                padding: "20px"
+                padding: "20px",
+                backgroundColor: 'transparent'
             }}>
 
             <div className="container">
