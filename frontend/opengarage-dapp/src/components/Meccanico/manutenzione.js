@@ -65,7 +65,7 @@ const MaintenanceForm = () => {
                 if(newCID){
                     const tx = await contract.updateVehicle(formData.carId, newCID);
                     await tx.wait();
-                    alert("Modifica avvenuta con successo");
+                    alert("Manutenzione inserita con successo");
                 }
             }
 

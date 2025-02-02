@@ -30,7 +30,7 @@ export default function LoginPage(contract, signer) {
 
             if(isAdmin){
                 const address = prompt("Inserisci l'indirizzo dell'utente:");
-                await assignRole(Roles.MECHANIC_ROLE, address);
+                await assignRole(Roles.MANUFACTURER_ROLE, address);
 
             }else{
                 console.log("verifico ruolo...");
@@ -42,7 +42,11 @@ export default function LoginPage(contract, signer) {
                     if(isMechanic){
                         navigate('/maintenance');
                     }else{
-                        navigate('/homePageUser');
+                        const isInsurer = await checkRole(contract.INSURER_ROLE(), address);
+                        if(isInsurer)
+                            navigate('/insurance');
+                        else
+                            navigate('/homePageUser');
                     }
                 }
 

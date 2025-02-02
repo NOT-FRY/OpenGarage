@@ -86,6 +86,24 @@ const VehicleDetails = ({ contract }) => {
                          <p><strong>Storico Manutenzioni:</strong> Nessuna manutenzione registrata</p>
                      )}
 
+                     {vehicle.sinistri && vehicle.sinistri.length > 0 ? (
+                         <div className="maintenance-history">
+                             <h3>Storico Sinistri</h3>
+                             <ul>
+                                 {vehicle.sinistri.map((sinistro, index) => (
+                                     <li key={index}>
+                                         <p><strong>Data:</strong> {sinistro.data}</p>
+                                         <p><strong>Descrizione:</strong> {sinistro.descrizione}</p>
+                                         <p><strong>Luogo:</strong> {sinistro.luogo}</p>
+                                         <p><strong>Danno:</strong> {sinistro.costoDanno}€</p>
+                                     </li>
+                                 ))}
+                             </ul>
+                         </div>
+                     ) : (
+                         <p><strong>Storico Sinistri:</strong> Nessun sinistro registrato</p>
+                     )}
+
                  </div>
              )}
 

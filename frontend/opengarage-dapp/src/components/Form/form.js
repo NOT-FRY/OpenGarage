@@ -22,7 +22,7 @@ function CarForm(){
         tipoCarburante: '',
         numeroKm: '',
         dimensioni: '',
-        numeroProprietari: 0,
+        numeroProprietari: 1,
     });
 
     const [owner, setOwner] = useState('');
@@ -61,7 +61,7 @@ function CarForm(){
             console.log("Sto registrando veicolo su blockchain...", carId, cid);
             const tx = await contract.registerVehicle(carId,cid, owner);
             await tx.wait();
-            alert("Veicolo registrato con successo su blockchain! carID: ${carId}");
+            alert(`Veicolo registrato con successo su blockchain! carID: ${carId}`);
             navigate('/vehicleDetails');
         } catch (error) {
             console.error("Errore durante la registrazione del veicolo su blockchain:", error);
