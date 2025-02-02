@@ -3,14 +3,14 @@
     margin: 40px auto;
     padding: 20px;
     background-color: #1A2730;
-    color: #FFFFFF;
+    color: #B0CEE2;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 h1 {
     text-align: center;
-    color: white;
+    color: #B0CEE2;
 }
 
 .maintenance-form .form-group {
@@ -56,5 +56,5 @@ button:hover {
 }
 
 button:active {
-    background-color: #BOCEE2;
+    background-color: #B0CEE2;
 }

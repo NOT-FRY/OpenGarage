@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./MaintenanceForm.css";
+import Header from "../Header/Header";
 
 const MaintenanceForm = () => {
     const navigate = useNavigate();
@@ -25,6 +26,7 @@ const MaintenanceForm = () => {
 
     return (
         <div className="maintenance-form-container">
+            <Header/>
             <h1>Registra Manutenzione Veicolo</h1>
             <form onSubmit={handleSubmit} className="maintenance-form">
                 <div className="form-group">

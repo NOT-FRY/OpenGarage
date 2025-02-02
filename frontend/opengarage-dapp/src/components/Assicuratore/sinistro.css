@@ -2,7 +2,7 @@
     max-width: 500px;
     margin: 50px auto;
     padding: 30px;
-    background-color: #1A2730; /* Colore scuro della palette */
+    background-color: #1A2730;
     color: white;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
@@ -12,6 +12,7 @@
 .insurance-form h2 {
     margin-bottom: 20px;
     font-size: 24px;
+    color: #B0CEE2;
     text-transform: uppercase;
 }
 
