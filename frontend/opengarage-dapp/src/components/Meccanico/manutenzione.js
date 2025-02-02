@@ -39,9 +39,9 @@ const MaintenanceForm = () => {
             const signer = await provider.getSigner();
             const contract = new Contract(contractAddress, contractABI, signer);
 
-            const isUpdater = await checkRole(contract.UPDATER_ROLE(), signer);
+            const isMechanic = await checkRole(contract.MECHANIC_ROLE(), signer);
 
-            if (!isUpdater){
+            if (!isMechanic){
                 alert("L'utente non è un meccanico");
                 return;
             }

@@ -10,7 +10,8 @@ import "hardhat/console.sol";
 contract OpenGarage is AccessControl {
     // Definizione dei ruoli
     bytes32 public constant MANUFACTURER_ROLE = keccak256("MANUFACTURER_ROLE");
-    bytes32 public constant UPDATER_ROLE = keccak256("UPDATER_ROLE");
+    bytes32 public constant INSURER_ROLE = keccak256("INSURER_ROLE");
+    bytes32 public constant MECHANIC_ROLE = keccak256("MECHANIC_ROLE");
 
     // Struttura per rappresentare un veicolo
     struct Vehicle {
@@ -21,8 +22,6 @@ contract OpenGarage is AccessControl {
         bool buyerApproved; // boolean se l'acquirente ha accettato
     }
 
-
-
     constructor(){
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);//Di Open zeppelin, può gestire tutti i ruoli
     }
@@ -32,10 +31,9 @@ contract OpenGarage is AccessControl {
 
     // Eventi per tracciamento
     event VehicleRegistered(string carId, string cid);
-    event OwnershipTransferred(string carId, address oldOwner, address newOwner);
     event VehicleUpdated(string carId,string oldCID,string newCID);
     event TransferRequested(string carId, address seller, address buyer);
-    event TransferApproved(string carId, address newOwner);
+    event TransferApproved(string carId,address oldOwner, address newOwner);
     event VehiclePending(address newOwner);
 
     // Funzione per assegnare un ruolo
@@ -56,28 +54,18 @@ contract OpenGarage is AccessControl {
     }
 
     // Funzione per aggiornare un veicolo (solo per meccanici/assicuratori), viene aggiornato il CID 
-    function updateVehicle(string memory carId, string memory newCID) public onlyRole(UPDATER_ROLE){
+    function updateVehicle(string memory carId, string memory newCID) public{
+        require(
+            hasRole(INSURER_ROLE, msg.sender) || hasRole(MECHANIC_ROLE, msg.sender),
+            "Accesso negato"
+        );
+
         require(bytes(vehicles[carId].carId).length != 0, "Veicolo non trovato");
         Vehicle storage vehicle = vehicles[carId];
         string memory oldCID = vehicle.cid;
         vehicle.cid = newCID;
         emit VehicleUpdated(carId, oldCID, newCID);
     }
-
-    // Funzione per trasferire la proprietà (solo per proprietari)
-    // function transferOwnership(string memory carId, address newOwner) public {
-    //     Vehicle storage vehicle = vehicles[carId];
-    //     require(vehicle.owner == msg.sender, "Non sei il proprietario del veicolo");
-    //     address oldOwner = vehicle.owner;
-    //     vehicle.owner = newOwner;
-    //     emit OwnershipTransferred(carId, oldOwner, newOwner);
-    // }
-
-    // Funzione per verificare il proprietario attuale di un veicolo
-    // function getOwner(string memory carId) public view returns (address) {
-    //     require(bytes(vehicles[carId].carId).length != 0, "Veicolo non trovato");
-    //     return vehicles[carId].owner;
-    // }
 
     //funzione per richiedere il trasferimento
     function requestVehicle(string memory carId, address buyer) public {
@@ -88,7 +76,6 @@ contract OpenGarage is AccessControl {
 
         vehicle.pendingBuyer = buyer;
 
-        vehicle.buyerApproved = false;
         emit TransferRequested(carId, msg.sender, buyer);
     }
 
@@ -96,24 +83,17 @@ contract OpenGarage is AccessControl {
     function approveTransfer(string memory carId, string memory newCID) public{
         require(bytes(vehicles[carId].carId).length != 0, "Veicolo non trovato");
         Vehicle storage vehicle = vehicles[carId];
-        require(!vehicle.buyerApproved, "Trasferimento gia approvato");
         require(vehicle.pendingBuyer == msg.sender, "Non sei colui che compra il veicolo");
 
-        vehicle.buyerApproved = true;
-
         // Se entrambe le parti hanno firmato, si completa il trasferimento
-        if (vehicle.buyerApproved) {
-            address oldOwner = vehicle.owner;
-            vehicle.owner = msg.sender;
-            vehicle.pendingBuyer = address(0);
-            vehicle.buyerApproved = false;
-            vehicle.cid = newCID;
+        address oldOwner = vehicle.owner;
+        vehicle.owner = msg.sender;
+        vehicle.pendingBuyer = address(0);
+        vehicle.cid = newCID;
 
-            emit TransferApproved(carId, msg.sender);
+        emit TransferApproved(carId, oldOwner,msg.sender);
+
     }
-    }
-
-
 
 
     // Funzione per recuperare il CID di un veicolo

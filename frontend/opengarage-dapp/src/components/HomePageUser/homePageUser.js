@@ -103,10 +103,11 @@ function HomePageUser() {
 
             const isADMIN = await checkRole(contract.DEFAULT_ADMIN_ROLE(), signer );
             const isManufacturer = await checkRole(contract.MANUFACTURER_ROLE(), signer );
-            const isUpdater = await checkRole(contract.UPDATER_ROLE(), signer);
+            const isInsurer = await checkRole(contract.INSURER_ROLE(), signer);
+            const isMechanic = await checkRole(contract.MECHANIC_ROLE(), signer);
 
-
-            if (!isADMIN && !isManufacturer && !isUpdater){
+            //Utente normale
+            if (!isADMIN && !isManufacturer && !isInsurer && !isMechanic){
                 setSigner(signer);
                 setContract(contract);
                 const tx = await contract.requestVehicle(carId, newOwner);
@@ -138,9 +139,11 @@ function HomePageUser() {
 
             const isADMIN = await checkRole(contract.DEFAULT_ADMIN_ROLE(), signer );
             const isManufacturer = await checkRole(contract.MANUFACTURER_ROLE(), signer );
-            const isUpdater = await checkRole(contract.UPDATER_ROLE(), signer);
+            const isInsurer = await checkRole(contract.INSURER_ROLE(), signer);
+            const isMechanic = await checkRole(contract.MECHANIC_ROLE(), signer);
 
-            if (!isADMIN && !isManufacturer && !isUpdater){
+            //Utente normale
+            if (!isADMIN && !isManufacturer && !isInsurer && !isMechanic){
                 setSigner(signer);
                 setContract(contract);
 
