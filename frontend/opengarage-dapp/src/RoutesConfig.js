@@ -5,6 +5,7 @@ import App from "./App";
 import CarForm from "./components/Form/form"
 import VehicleDetails from "./components/VehicleDetails/vehicleDetails"
 import HomePageUser from "./components/HomePageUser/homePageUser"
+import MaintenanceForm from "./components/Meccanico/manutenzione";
 
 const RoutesConfig = () => {
     return (
@@ -15,6 +16,7 @@ const RoutesConfig = () => {
                 <Route path="/registerVehicle" element={<CarForm />} />
                 <Route path="/vehicleDetails" element={<VehicleDetails />} />
                 <Route path="/homePageUser" element={<HomePageUser />} />
+                <Route path="/maintenance" element={<MaintenanceForm />} />
             </Routes>
         </Router>
     );

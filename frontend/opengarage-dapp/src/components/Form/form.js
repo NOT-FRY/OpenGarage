@@ -6,6 +6,7 @@ import {BrowserProvider, Contract, JsonRpcSigner} from "ethers";
 import {contractABI, contractAddress} from "../../utils/ContractUtils";
 import {checkRole} from "../../utils/Role";
 import {useNavigate} from "react-router-dom";
+import {sendDataToIpfs} from "../../utils/VehicleUtils";
 
 function CarForm(){
     const navigate = useNavigate();
@@ -20,7 +21,8 @@ function CarForm(){
         numeroPorte: '',
         tipoCarburante: '',
         numeroKm: '',
-        dimensioni: ''
+        dimensioni: '',
+        numeroProprietari: 0,
     });
 
     const [owner, setOwner] = useState('');
@@ -32,21 +34,6 @@ function CarForm(){
             [name]: value,
         }));
     };
-
-    const sendDataToIpfs = async () => {
-        try{
-            const responseIPFS = await axios.post("http://localhost:3001/ipfs/upload", {formData})
-            let cid = responseIPFS.data;
-            console.log("cid:",cid)
-
-            const carId = generateCarId();
-            await registerVehicle(carId, cid);
-
-        }catch (errorData){
-            alert("errore nel caricamento dei dati");
-            console.log(JSON.stringify(errorData))
-        }
-    }
 
     function generateCarId() {
         return `car-${crypto.randomUUID()}`;
@@ -74,18 +61,23 @@ function CarForm(){
             console.log("Sto registrando veicolo su blockchain...", carId, cid);
             const tx = await contract.registerVehicle(carId,cid, owner);
             await tx.wait();
-            alert("Veicolo registrato con successo su blockchain!");
+            alert("Veicolo registrato con successo su blockchain! carID: ${carId}");
             navigate('/vehicleDetails');
         } catch (error) {
             console.error("Errore durante la registrazione del veicolo su blockchain:", error);
         }
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        sendDataToIpfs().then(r=>{
-            console.log('Dati inviati:', formData);
-        })
+        const cid = await sendDataToIpfs(formData);
+        console.log('Dati inviati:', formData);
+        if(cid){
+            const carId = generateCarId();
+            await registerVehicle(carId, cid);
+        }else{
+            console.log("Errore nel recupero del CID");
+        }
 
 
     };

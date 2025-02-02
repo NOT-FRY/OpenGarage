@@ -19,27 +19,27 @@ describe("OpenGarage Smart Contract", function () {
 
   it("Should allow admin to assign roles", async function () {
     const MANUFACTURER_ROLE = await openGarage.MANUFACTURER_ROLE();
-    const UPDATER_ROLE = await openGarage.UPDATER_ROLE();
+    const INSURER_ROLE = await openGarage.INSURER_ROLE();
 
     await openGarage.assignRole(MANUFACTURER_ROLE, manufacturer.address);
-    await openGarage.assignRole(UPDATER_ROLE, updater.address);
+    await openGarage.assignRole(INSURER_ROLE, updater.address);
 
     expect(await openGarage.hasRole(MANUFACTURER_ROLE, manufacturer.address)).to.be.true;
-    expect(await openGarage.hasRole(UPDATER_ROLE, updater.address)).to.be.true;
+    expect(await openGarage.hasRole(INSURER_ROLE, updater.address)).to.be.true;
   });
 
   it("Should allow admin to revoke roles", async function () {
     const MANUFACTURER_ROLE = await openGarage.MANUFACTURER_ROLE();
-    const UPDATER_ROLE = await openGarage.UPDATER_ROLE();
+    const INSURER_ROLE = await openGarage.INSURER_ROLE();
 
     await openGarage.assignRole(MANUFACTURER_ROLE, manufacturer.address);
-    await openGarage.assignRole(UPDATER_ROLE, updater.address);
+    await openGarage.assignRole(INSURER_ROLE, updater.address);
 
     await openGarage.deleteRole(MANUFACTURER_ROLE, manufacturer.address);
-    await openGarage.deleteRole(UPDATER_ROLE, updater.address);
+    await openGarage.deleteRole(INSURER_ROLE, updater.address);
 
     expect(await openGarage.hasRole(MANUFACTURER_ROLE, manufacturer.address)).to.be.false;
-    expect(await openGarage.hasRole(UPDATER_ROLE, updater.address)).to.be.false;
+    expect(await openGarage.hasRole(INSURER_ROLE, updater.address)).to.be.false;
   });
 
   it("Should emit events on registering and updating a vehicle", async function () {
@@ -47,10 +47,10 @@ describe("OpenGarage Smart Contract", function () {
     const cid = "exampleCID";
     const newCid = "updatedCID";
     const MANUFACTURER_ROLE = await openGarage.MANUFACTURER_ROLE();
-    const UPDATER_ROLE = await openGarage.UPDATER_ROLE();
+    const MECHANIC_ROLE = await openGarage.MECHANIC_ROLE();
     //I ruoli si devono riassegnare in ogni metodo di test
     await openGarage.assignRole(MANUFACTURER_ROLE, manufacturer.address);
-    await openGarage.assignRole(UPDATER_ROLE, updater.address);
+    await openGarage.assignRole(MECHANIC_ROLE, updater.address);
 
     await expect(openGarage.connect(manufacturer).registerVehicle(carId,cid,seller))
       .to.emit(openGarage, "VehicleRegistered")
@@ -66,10 +66,10 @@ describe("OpenGarage Smart Contract", function () {
     const cid = "exampleCID";
     const newCid = "updatedCID";
     const MANUFACTURER_ROLE = await openGarage.MANUFACTURER_ROLE();
-    const UPDATER_ROLE = await openGarage.UPDATER_ROLE();
+    const INSURER_ROLE = await openGarage.INSURER_ROLE();
 
     await openGarage.assignRole(MANUFACTURER_ROLE, manufacturer.address);
-    await openGarage.assignRole(UPDATER_ROLE, updater.address);
+    await openGarage.assignRole(INSURER_ROLE, updater.address);
 
     await openGarage.connect(manufacturer).registerVehicle(carId, cid, seller)
     await openGarage.connect(updater).updateVehicle(carId, newCid);
@@ -93,6 +93,18 @@ describe("OpenGarage Smart Contract", function () {
 
     await expect(
       openGarage.connect(user).updateVehicle(carId, cid)
+    ).to.be.reverted;
+  });
+
+  it("Should allow MECHANIC/INSURER user to modify a vehicle", async function () {
+    const carId = "CAR456";
+    const cid = "newCID";
+
+    const INSURER_ROLE = await openGarage.INSURER_ROLE();
+    await openGarage.assignRole(INSURER_ROLE, seller.address);
+
+    await expect(
+        openGarage.connect(user).updateVehicle(carId, cid)
     ).to.be.reverted;
   });
 

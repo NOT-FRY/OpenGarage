@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./MaintenanceForm.css";
 import Header from "../Header/Header";
+import "./manutenzione.css";
+import { BrowserProvider, Contract } from "ethers";
+import {contractABI, contractAddress} from "../../utils/ContractUtils";
+import {checkRole} from "../../utils/Role";
+import {getVehicleDetails, sendDataToIpfs} from "../../utils/VehicleUtils";
 
 const MaintenanceForm = () => {
     const navigate = useNavigate();
@@ -19,9 +24,56 @@ const MaintenanceForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        await handleMaintenance();
 
-        //salva su ipfs
+    };
 
+    const handleMaintenance = async () => {
+        if (!window.ethereum) {
+            alert("MetaMask non è installato!");
+            return;
+        }
+
+        try {
+            const provider = new BrowserProvider(window.ethereum);
+            await provider.send("eth_requestAccounts", []);
+
+            const signer = await provider.getSigner();
+            const contract = new Contract(contractAddress, contractABI, signer);
+
+            const isMechanic = await checkRole(contract.MECHANIC_ROLE(), signer);
+
+            if (!isMechanic){
+                alert("L'utente non è un meccanico");
+                return;
+            }
+
+            const vehicle = await getVehicleDetails(contract,formData.carId);
+            if(vehicle){
+                const updatedVehicle = {
+                    ...vehicle.formData,
+                    manutenzioni: [
+                        ...(vehicle.formData.manutenzioni || []),
+                        {
+                            data: formData.data,
+                            tipoServizio: formData.tipoServizio,
+                            costo: formData.costo,
+                            note: formData.note,
+                        }
+                    ]
+                };
+                const newCID = await sendDataToIpfs(updatedVehicle);
+                if(newCID){
+                    const tx = await contract.updateVehicle(formData.carId, newCID);
+                    await tx.wait();
+                    alert("Modifica avvenuta con successo");
+                }
+            }
+
+        } catch (error) {
+            console.error("Errore nella modifica della manutenzione", error);
+            alert("Errore nella modifica della manutenzione.");
+        }
     };
 
     return (

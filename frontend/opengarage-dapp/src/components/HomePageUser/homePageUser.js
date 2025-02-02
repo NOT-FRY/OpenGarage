@@ -6,6 +6,7 @@ import { BrowserProvider, Contract } from "ethers";
 import { contractABI, contractAddress } from "../../utils/ContractUtils";
 import { useNavigate } from "react-router-dom";
 import {checkRole} from "../../utils/Role";
+import {getVehicleDetails, sendDataToIpfs} from "../../utils/VehicleUtils";
 
 function HomePageUser() {
     const [carId, setCarId] = useState("");
@@ -74,13 +75,6 @@ function HomePageUser() {
         }
     }; */
 
-
-
-    function generateCarId() {
-        return `car-${crypto.randomUUID()}`;
-    }
-
-
     const onSubmitRequest = (e) =>{
         e.preventDefault();
         handleTransferRequest().then(r=>{
@@ -100,7 +94,6 @@ function HomePageUser() {
             alert("MetaMask non è installato!");
             return;
         }
-        console.log("sono qui");
         try {
             const provider = new BrowserProvider(window.ethereum);
             await provider.send("eth_requestAccounts", []);
@@ -108,17 +101,18 @@ function HomePageUser() {
             const signer = await provider.getSigner();
             const contract = new Contract(contractAddress, contractABI, signer);
 
-            const isADMIN = await checkRole(contract.DEFAULT_ADMIN_ROLE, signer );
-            const isManufacturer = await checkRole(contract.MANUFACTURER_ROLE, signer );
-            const isUpdater = await checkRole(contract.UPDATER_ROLE, signer);
+            const isADMIN = await checkRole(contract.DEFAULT_ADMIN_ROLE(), signer );
+            const isManufacturer = await checkRole(contract.MANUFACTURER_ROLE(), signer );
+            const isInsurer = await checkRole(contract.INSURER_ROLE(), signer);
+            const isMechanic = await checkRole(contract.MECHANIC_ROLE(), signer);
 
-
-            if (!isADMIN && !isManufacturer && !isUpdater){
+            //Utente normale
+            if (!isADMIN && !isManufacturer && !isInsurer && !isMechanic){
                 setSigner(signer);
                 setContract(contract);
                 const tx = await contract.requestVehicle(carId, newOwner);
                 await tx.wait();
-                alert("Trasferimento approvato!");
+                alert("Richiesta di trasferimento approvata!");
             }else{
                 alert("User is a special User");
             }
@@ -143,16 +137,27 @@ function HomePageUser() {
             const signer = await provider.getSigner();
             const contract = new Contract(contractAddress, contractABI, signer);
 
-            const isADMIN = await checkRole(contract.DEFAULT_ADMIN_ROLE, signer );
-            const isManufacturer = await checkRole(contract.MANUFACTURER_ROLE, signer );
-            const isUpdater = await checkRole(contract.UPDATER_ROLE, signer);
+            const isADMIN = await checkRole(contract.DEFAULT_ADMIN_ROLE(), signer );
+            const isManufacturer = await checkRole(contract.MANUFACTURER_ROLE(), signer );
+            const isInsurer = await checkRole(contract.INSURER_ROLE(), signer);
+            const isMechanic = await checkRole(contract.MECHANIC_ROLE(), signer);
 
-            if (!isADMIN && !isManufacturer && !isUpdater){
+            //Utente normale
+            if (!isADMIN && !isManufacturer && !isInsurer && !isMechanic){
                 setSigner(signer);
                 setContract(contract);
-                const tx = await contract.approveTransfer(carIdForApprove, generateCarId());
-                await tx.wait();
-                alert("Trasferimento approvato!");
+
+                const vehicle = await getVehicleDetails(contract,carIdForApprove);
+                if(vehicle){
+                    vehicle.formData.numeroProprietari += 1; // Incrementa il numero di proprietari
+                    const newCID = await sendDataToIpfs(vehicle.formData);
+                    if(newCID){
+                        const tx = await contract.approveTransfer(carIdForApprove, newCID);
+                        await tx.wait();
+                        alert("Trasferimento approvato!");
+                    }
+                }
+
             }else{
                 alert("User is a special User");
             }

@@ -6,7 +6,8 @@ import {contractABI, contractAddress} from "./ContractUtils";
 export const Roles = {
     DEFAULT_ADMIN_ROLE: "DEFAULT_ADMIN_ROLE",
     MANUFACTURER_ROLE: "MANUFACTURER_ROLE",
-    UPDATER_ROLE: "UPDATER_ROLE"
+    INSURER_ROLE: "INSURER_ROLE",
+    MECHANIC_ROLE: "MECHANIC_ROLE"
 }
 
 export async function checkRole(role,address) {
@@ -52,14 +53,17 @@ export async function assignRole(role, address) {
             case Roles.MANUFACTURER_ROLE:
                 contractRole = contract.MANUFACTURER_ROLE();
                 break;
-            case Roles.UPDATER_ROLE:
-                contractRole = contract.UPDATER_ROLE();
+            case Roles.INSURER_ROLE:
+                contractRole = contract.INSURER_ROLE();
+                break;
+            case Roles.MECHANIC_ROLE:
+                contractRole = contract.MECHANIC_ROLE();
                 break;
         }
 
         const tx = await contract.assignRole(contractRole,address);
         await tx.wait();
-        console.log("Ruolo assegnato con successo all'indirizzo ", address);
+        alert("Ruolo assegnato con successo!");
     } catch (error) {
         console.error("Errore l'assegnazione del ruolo:", error);
     }
