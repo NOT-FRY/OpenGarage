@@ -30,7 +30,7 @@ export default function LoginPage(contract, signer) {
 
             if(isAdmin){
                 const address = prompt("Inserisci l'indirizzo dell'utente:");
-                await assignRole(Roles.INSURER_ROLE, address);
+                await assignRole(Roles.MECHANIC_ROLE, address);
 
             }else{
                 console.log("verifico ruolo...");
