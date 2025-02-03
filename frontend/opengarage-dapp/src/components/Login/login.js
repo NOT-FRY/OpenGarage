@@ -29,9 +29,7 @@ export default function LoginPage(contract, signer) {
             const isAdmin = await checkRole(contract.DEFAULT_ADMIN_ROLE(), address);
 
             if(isAdmin){
-                const address = prompt("Inserisci l'indirizzo dell'utente:");
-                await assignRole(Roles.MANUFACTURER_ROLE, address);
-
+                navigate('/assignRole');
             }else{
                 console.log("verifico ruolo...");
                 const isManufacturer = await checkRole(contract.MANUFACTURER_ROLE(), address);
@@ -49,11 +47,7 @@ export default function LoginPage(contract, signer) {
                             navigate('/homePageUser');
                     }
                 }
-
-
             }
-
-
 
         } catch (error) {
             console.error("Errore durante la connessione:", error);

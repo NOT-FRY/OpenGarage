@@ -7,6 +7,7 @@ import VehicleDetails from "./components/VehicleDetails/vehicleDetails"
 import HomePageUser from "./components/HomePageUser/homePageUser"
 import MaintenanceForm from "./components/Meccanico/manutenzione";
 import InsuranceForm from "./components/Assicuratore/sinistro";
+import Amministratore from "./components/Amministratore/amministratore";
 
 const RoutesConfig = () => {
     return (
@@ -19,6 +20,7 @@ const RoutesConfig = () => {
                 <Route path="/homePageUser" element={<HomePageUser />} />
                 <Route path="/maintenance" element={<MaintenanceForm />} />
                 <Route path="/insurance" element={<InsuranceForm />} />
+                <Route path="/assignRole" element={<Amministratore />} />
             </Routes>
         </Router>
     );

@@ -59,12 +59,15 @@ export async function assignRole(role, address) {
             case Roles.MECHANIC_ROLE:
                 contractRole = contract.MECHANIC_ROLE();
                 break;
+            default:
+                console.error("Ruolo non valido");
+                break;
         }
 
         const tx = await contract.assignRole(contractRole,address);
         await tx.wait();
-        alert("Ruolo assegnato con successo!");
+        alert(`Ruolo "${role}" assegnato con successo a: ${address}`);
     } catch (error) {
-        console.error("Errore l'assegnazione del ruolo:", error);
+        console.error("Errore con l'assegnazione del ruolo:", error);
     }
 }

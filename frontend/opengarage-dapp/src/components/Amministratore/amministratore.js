@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import "./amministratore.css";
 import Header from "../Header/Header";
+import {assignRole, Roles} from "../../utils/Role";
 
 function Amministratore() {
-    const [selectedOption, setSelectedOption] = useState("Meccanico");
+    const [selectedOption, setSelectedOption] = useState(Roles.MANUFACTURER_ROLE);
     const [userAddress, setUserAddress] = useState("");
 
     function onValueChange(event) {
@@ -14,70 +15,70 @@ function Amministratore() {
         setUserAddress(event.target.value);
     }
 
-    function formSubmit(event) {
+    async function formSubmit(event) {
         event.preventDefault();
 
         if (!userAddress.trim()) {
             alert("Inserisci un indirizzo valido.");
             return;
         }
-
-        console.log(`Ruolo assegnato: ${selectedOption} | Indirizzo: ${userAddress}`);
-        alert(`Ruolo "${selectedOption}" assegnato a: ${userAddress}`);
-
+        await assignRole(selectedOption, userAddress);
     }
 
     return (
-        <div className="container">
-            <Header/>
-            <form onSubmit={formSubmit}>
-                <h1>Assegna un ruolo</h1>
 
-                <label>
-                    Indirizzo utente:
-                    <input
-                        type="text"
-                        value={userAddress}
-                        onChange={onAddressChange}
-                        placeholder="Inserisci l'indirizzo"
-                        required
-                    />
-                </label>
+        <div>
+            <Header />
+            <div className="container">
+                <form onSubmit={formSubmit}>
+                    <h1>Assegna un ruolo</h1>
 
-                <h2>Seleziona il ruolo:</h2>
+                    <label>
+                        Indirizzo utente:
+                        <input
+                            type="text"
+                            value={userAddress}
+                            onChange={onAddressChange}
+                            placeholder="Inserisci l'indirizzo"
+                            required
+                        />
+                    </label>
 
-                <label>
-                    <input
-                        type="radio"
-                        value="Manufacturer"
-                        checked={selectedOption === "Meccanico"}
-                        onChange={onValueChange}
-                    />
-                    Manufacturer
-                </label>
+                    <h2>Seleziona il ruolo:</h2>
 
-                <label>
-                    <input
-                        type="radio"
-                        value="Updater"
-                        checked={selectedOption === "Updater"}
-                        onChange={onValueChange}
-                    />
-                    Updater
-                </label>
+                    <label>
+                        <input
+                            type="radio"
+                            value="MANUFACTURER_ROLE"
+                            checked={selectedOption === Roles.MANUFACTURER_ROLE}
+                            onChange={onValueChange}
+                        />
+                        Casa Produttrice
+                    </label>
 
-                <label>
-                    <input
-                        type="radio"
-                        value="Assicuratore"
-                        checked={selectedOption === "Assicuratore"}
-                        onChange={onValueChange}
-                    />
-                    Assicuratore
-                </label>
+                    <label>
+                        <input
+                            type="radio"
+                            value="MECHANIC_ROLE"
+                            checked={selectedOption === Roles.MECHANIC_ROLE}
+                            onChange={onValueChange}
+                        />
+                        Meccanico
+                    </label>
 
-                <button type="submit">Assegna ruolo</button>
-            </form>
+                    <label>
+                        <input
+                            type="radio"
+                            value="INSURER_ROLE"
+                            checked={selectedOption === Roles.INSURER_ROLE}
+                            onChange={onValueChange}
+                        />
+                        Assicuratore
+                    </label>
+
+                    <button type="submit">Assegna ruolo</button>
+                </form>
+            </div>
         </div>
     );
 }

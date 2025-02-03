@@ -2,7 +2,7 @@ import axios from "axios";
 
 export async function getVehicleDetails(contract,carId) {
     try {
-        console.log("carID:",carId);
+        console.log("carID richiesto:",carId);
         const cid = await getVehicleCID(contract,carId);
         if(!cid){
             console.log("CID non trovato su blockchain");

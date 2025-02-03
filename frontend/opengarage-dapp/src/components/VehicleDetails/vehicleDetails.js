@@ -66,7 +66,7 @@ const VehicleDetails = ({ contract }) => {
                      <p><strong>Tipo carburante:</strong> {vehicle.tipoCarburante || "N/A"}</p>
                      <p><strong>Numero km:</strong> {vehicle.numeroKm || "N/A"}</p>
                      <p><strong>dimensioni:</strong> {vehicle.dimensioni || "N/A"}</p>
-                     <p><strong>Numero proprietari precedenti:</strong> {vehicle.numeroProprietari || 0 }</p>
+                     <p><strong>Numero proprietari:</strong> {vehicle.numeroProprietari || 0 }</p>
 
                      {vehicle.manutenzioni && vehicle.manutenzioni.length > 0 ? (
                          <div className="maintenance-history">
