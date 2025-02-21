@@ -5,9 +5,9 @@ const ipfsRouter = express.Router();
 // Configura IPFS
 
 const ipfs = create({
-    host: '192.168.1.155',  // Cambia con l'indirizzo del tuo nodo
-    port: 5001,         // Porta dell'API HTTP
-    protocol: 'http',   // Usa 'https' se stai usando un nodo remoto
+    host: 'hungry-liger-90.telebit.io',  // Cambia con l'indirizzo del tuo nodo
+    port: 443,         // Porta dell'API HTTP
+    protocol: 'https',   // Usa 'https' se stai usando un nodo remoto
 });
 
 // Carica un file su IPFS
