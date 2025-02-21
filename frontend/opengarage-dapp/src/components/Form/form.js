@@ -7,6 +7,8 @@ import {contractABI, contractAddress} from "../../utils/ContractUtils";
 import {checkRole} from "../../utils/Role";
 import {useNavigate} from "react-router-dom";
 import {sendDataToIpfs} from "../../utils/VehicleUtils";
+import {toast, ToastContainer} from "react-toastify";
+import {toastError, toastSuccess, toastWarn} from "../../utils/Toast";
 
 function CarForm(){
     const navigate = useNavigate();
@@ -41,7 +43,7 @@ function CarForm(){
 
     async function registerVehicle(carId, cid) {
         if (!window.ethereum) {
-            alert("MetaMask non è installato!");
+            toastError('Attenzione, Metamask non è installato!');
             return;
         }
 
@@ -55,16 +57,19 @@ function CarForm(){
             const address = signer.getAddress();
             const isManufacturer = await checkRole(contract.MANUFACTURER_ROLE(), address);
             if(!isManufacturer){
-                alert("User is not a manufacturer");
+                toastWarn('L\'Utente non è un produttore!');
                 return;
             }
             console.log("Sto registrando veicolo su blockchain...", carId, cid);
             const tx = await contract.registerVehicle(carId,cid, owner);
             await tx.wait();
-            alert(`Veicolo registrato con successo su blockchain! carID: ${carId}`);
+            toastSuccess(`Veicolo registrato con successo su blockchain! carID: ${carId}`);
+
+            await new Promise(r => setTimeout(r, 5000));
             navigate('/vehicleDetails');
         } catch (error) {
             console.error("Errore durante la registrazione del veicolo su blockchain:", error);
+            toastError('Errore durante la registrazione del veicolo su blockchain:');
         }
     }
 
@@ -85,7 +90,7 @@ function CarForm(){
     return (
         <div>
             <Header/>
-
+            <ToastContainer/>
             <form className={"form"}>
                 <div className="form-title">Indirizzo Proprietario</div>
                 <div className="form-group">
@@ -194,7 +199,7 @@ function CarForm(){
                         onChange={handleChange}
                     />
                 </div>
-                <button type={"submit"}>Inserisci Veicolo</button>
+                <button className={"main-button"} type={"submit"}>Inserisci Veicolo</button>
             </form>
 
 

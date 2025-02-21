@@ -36,7 +36,7 @@ input:focus, textarea:focus {
     border: 1px solid #B0CEE2;
 }
 
-button-form {
+.main-button-form {
     background-color: #A63E1B;
     color: white;
     border: none;
@@ -47,7 +47,7 @@ button-form {
     cursor: pointer;
 }
 
-button-form:hover {
+.main-button-form:hover {
     background-color: #E95D2C;
 }
 

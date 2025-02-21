@@ -6,18 +6,19 @@ import {useNavigate} from "react-router-dom";
 import {contractABI, contractAddress} from "../../utils/ContractUtils";
 import {JsonRpcSigner} from "ethers";
 import background from '../../images/Opera_senza_titolo.png';
-import Alert from 'react-bootstrap/Alert';
+import {ToastContainer, toast} from 'react-toastify';
+import {toastError} from "../../utils/Toast";
 
 
 
 export default function LoginPage(contract, signer) {
     const navigate = useNavigate();
-    const [errorAlert, setErrorAlert] = useState(false);
 
 // Funzione per connettere MetaMask
     async function connectWallet() {
         if (!window.ethereum) {
-            setErrorAlert(true);
+            toastError('Attenzione, Metamask non è installato!');
+            return;
         }
 
         try {
@@ -59,9 +60,8 @@ export default function LoginPage(contract, signer) {
         <div>
 
             <Header/>
-            {errorAlert && (<Alert key='warning' variant='warning'>
-                This is a alert—check it out!
-            </Alert>)}
+            <ToastContainer/>
+
         <div style={{
             display: 'flex',
             flexDirection: 'column',
@@ -71,8 +71,6 @@ export default function LoginPage(contract, signer) {
             width: '100%',
             backgroundColor: '#f9e4d1', // Aggiunge uno sfondo leggero per contrasto
         }}>
-
-
             {/* Contenitore con bordo */}
             <div style={{
                 display: 'flex',
@@ -108,6 +106,7 @@ export default function LoginPage(contract, signer) {
                     <div className="button-container">
                         <h2 style={{color:'black'}}>Login to OpenGarage</h2>
                         <button
+                            className={"main-button"}
                             style={{
                                 padding: '10px 20px',
                                 fontSize: '16px',

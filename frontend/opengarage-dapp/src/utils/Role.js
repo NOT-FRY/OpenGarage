@@ -1,5 +1,7 @@
 import {BrowserProvider, Contract} from "ethers";
 import {contractABI, contractAddress} from "./ContractUtils";
+import {toast} from "react-toastify";
+import {toastError, toastSuccess, toastWarn} from "./Toast";
 
 /*Non ci sono le enum in JS, vado a mappare con stringhe poi al momento della chiamata
  al metodo dello smart contract, vado ad ottenere il ruolo corretto direttamente dal contratto*/
@@ -29,7 +31,7 @@ export async function checkRole(role,address) {
 
 export async function assignRole(role, address) {
     if (!window.ethereum) {
-        alert("MetaMask non è installato!");
+        toastError('Attenzione, Metamask non è installato!');
         return;
     }
 
@@ -44,7 +46,7 @@ export async function assignRole(role, address) {
         const adminAddress = signer.getAddress()
         const isAdmin = await checkRole(contract.DEFAULT_ADMIN_ROLE(), adminAddress);
         if(!isAdmin){
-            alert("User is not an Administrator");
+            toastWarn('L\' Utente non è amministratore!');
             console.log("L'utente non è amministratore:",adminAddress);
             return;
         }
@@ -66,8 +68,9 @@ export async function assignRole(role, address) {
 
         const tx = await contract.assignRole(contractRole,address);
         await tx.wait();
-        alert(`Ruolo "${role}" assegnato con successo a: ${address}`);
+        toastSuccess(`Ruolo "${role}" assegnato con successo a: ${address}`);
     } catch (error) {
         console.error("Errore con l'assegnazione del ruolo:", error);
+        toastError('Errore con l\'assegnazione del ruolo');
     }
 }

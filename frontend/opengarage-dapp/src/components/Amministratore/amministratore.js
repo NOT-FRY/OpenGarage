@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import "./amministratore.css";
 import Header from "../Header/Header";
 import {assignRole, Roles} from "../../utils/Role";
+import {toast, ToastContainer} from "react-toastify";
+import {toastError} from "../../utils/Toast";
 
 function Amministratore() {
     const [selectedOption, setSelectedOption] = useState(Roles.MANUFACTURER_ROLE);
@@ -19,7 +21,7 @@ function Amministratore() {
         event.preventDefault();
 
         if (!userAddress.trim()) {
-            alert("Inserisci un indirizzo valido.");
+            toastError('Inserisci un indirizzo valido.');
             return;
         }
         await assignRole(selectedOption, userAddress);
@@ -29,6 +31,7 @@ function Amministratore() {
 
         <div>
             <Header />
+            <ToastContainer />
             <div className="container">
                 <form onSubmit={formSubmit}>
                     <h1>Assegna un ruolo</h1>
@@ -76,7 +79,7 @@ function Amministratore() {
                         Assicuratore
                     </label>
 
-                    <button type="submit">Assegna ruolo</button>
+                    <button className={"main-button"} type="submit">Assegna ruolo</button>
                 </form>
             </div>
         </div>

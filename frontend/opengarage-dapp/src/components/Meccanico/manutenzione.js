@@ -6,6 +6,8 @@ import { BrowserProvider, Contract } from "ethers";
 import {contractABI, contractAddress} from "../../utils/ContractUtils";
 import {checkRole} from "../../utils/Role";
 import {getVehicleDetails, sendDataToIpfs} from "../../utils/VehicleUtils";
+import {toast, ToastContainer} from "react-toastify";
+import {toastError, toastSuccess, toastWarn} from "../../utils/Toast";
 
 const MaintenanceForm = () => {
     const navigate = useNavigate();
@@ -29,7 +31,7 @@ const MaintenanceForm = () => {
 
     const handleMaintenance = async () => {
         if (!window.ethereum) {
-            alert("MetaMask non è installato!");
+            toastError('Attenzione, Metamask non è installato!');
             return;
         }
 
@@ -43,7 +45,7 @@ const MaintenanceForm = () => {
             const isMechanic = await checkRole(contract.MECHANIC_ROLE(), signer);
 
             if (!isMechanic){
-                alert("L'utente non è un meccanico");
+                toastWarn('L\' Utente non è un meccanico');
                 return;
             }
 
@@ -66,19 +68,24 @@ const MaintenanceForm = () => {
                     const tx = await contract.updateVehicle(formData.carId, newCID);
                     await tx.wait();
                     console.log("nuovo CID:",newCID);
-                    alert("Manutenzione inserita con successo");
+                    toastSuccess('Manutenzione inserita con successo');
+                }else{
+                    toastWarn('Errore durante l\'inserimento della manutenzione');
                 }
+            }else {
+                toastWarn('Veicolo non trovato');
             }
 
         } catch (error) {
             console.error("Errore nella modifica della manutenzione", error);
-            alert("Errore nella modifica della manutenzione.");
+            toastError('Errore nella modifica della manutenzione.');
         }
     };
 
     return (
         <div className="maintenance-form-container">
             <Header/>
+            <ToastContainer/>
             <h1>Registra Manutenzione Veicolo</h1>
             <form onSubmit={handleSubmit} className="maintenance-form">
                 <div className="form-group">
@@ -106,7 +113,7 @@ const MaintenanceForm = () => {
                     <textarea name="notes" value={formData.note} onChange={handleChange}></textarea>
                 </div>
 
-                <button type="submit">Registra Manutenzione</button>
+                <button className={"main-button"}  type="submit">Registra Manutenzione</button>
             </form>
         </div>
     );

@@ -38,7 +38,7 @@ textarea {
     min-height: 80px;
 }
 
-button {
+.main-button {
     width: 100%;
     padding: 12px;
     background-color: #A63E1B;
@@ -51,10 +51,10 @@ button {
     transition: background 0.3s;
 }
 
-button:hover {
+.main-button:hover {
     background-color: #E95D2C;
 }
 
-button:active {
+.main-button:active {
     background-color: #B0CEE2;
 }

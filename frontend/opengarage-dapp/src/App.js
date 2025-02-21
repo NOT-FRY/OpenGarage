@@ -10,7 +10,16 @@ import {useEffect, useState} from "react";
 // Funzione per connettere MetaMask
 async function connectWallet() {
     if (!window.ethereum) {
-        alert("MetaMask non è installato!");
+        toast.error('Attenzione, Metamask non è installato!', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        });
         return;
     }
 

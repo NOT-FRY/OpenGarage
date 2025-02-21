@@ -1,4 +1,6 @@
 import axios from "axios";
+import {toast} from "react-toastify";
+import {toastError} from "./Toast";
 
 export async function getVehicleDetails(contract,carId) {
     try {
@@ -26,7 +28,7 @@ export async function getVehicleDetails(contract,carId) {
 
 export async function getVehicleCID(contract,carId){
     if (!window.ethereum) {
-        alert("MetaMask non è installato!");
+        toastError('Attenzione, Metamask non è installato!');
         return;
     }
     try {
@@ -48,7 +50,7 @@ export async function sendDataToIpfs (formData) {
         return cid;
 
     }catch (errorData){
-        alert("errore nel caricamento dei dati");
+        toastError('Errore durante il caricamento dei dati');
         console.log(JSON.stringify(errorData))
     }
 

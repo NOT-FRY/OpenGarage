@@ -7,6 +7,8 @@ import { contractABI, contractAddress } from "../../utils/ContractUtils";
 import { useNavigate } from "react-router-dom";
 import {checkRole} from "../../utils/Role";
 import {getVehicleDetails, sendDataToIpfs} from "../../utils/VehicleUtils";
+import {toast, ToastContainer} from "react-toastify";
+import {toastError, toastSuccess, toastWarn} from "../../utils/Toast";
 
 function HomePageUser() {
     const [carId, setCarId] = useState("");
@@ -17,63 +19,6 @@ function HomePageUser() {
     const [signer, setSigner] = useState(null);
 
     const navigate = useNavigate();
-/*
-    useEffect(() => {
-        async function initBlockchain() {
-            if (!window.ethereum) {
-                alert("MetaMask non è installato!");
-                return;
-            }
-            try {
-                const provider = new BrowserProvider(window.ethereum);
-                await provider.send("eth_requestAccounts", []);
-                const signer = await provider.getSigner();
-
-                const isADMIN = await checkRole(contract.DEFAULT_ADMIN_ROLE, signer );
-                const isManufacturer = await checkRole(contract.MANUFACTURER_ROLE, signer );
-                const isUpdater = await checkRole(contract.UPDATER_ROLE, signer);
-
-                if (!isADMIN && !isManufacturer && !isUpdater){
-                    const contract = new Contract(contractAddress, contractABI, signer);
-                    setSigner(signer);
-                    setContract(contract);
-                    fetchPendingTransfers(contract);
-                }else{
-                    alert("User is a special User");
-                    return;
-                }
-
-
-
-            } catch (error) {
-                console.error("Errore durante la connessione alla blockchain:", error);
-            }
-        }
-
-    }, []);
-
-
-    // Funzione per ottenere le richieste di trasferimento in sospeso
-    const fetchPendingTransfers = async (contract) => {
-        if (!contract) return;
-        try {
-            const vehicleCount = 10; // Numero massimo di veicoli da controllare
-            let pending = [];
-            for (let i = 0; i < vehicleCount; i++) {
-                const vehicle = await contract.vehicles(i.toString());
-                if (vehicle.pendingBuyer !== "0x0000000000000000000000000000000000000000") {
-                    pending.push({
-                        carId: vehicle.carId,
-                        currentOwner: vehicle.owner,
-                        pendingBuyer: vehicle.pendingBuyer,
-                    });
-                }
-            }
-            setPendingTransfers(pending);
-        } catch (error) {
-            console.error("Errore nel recupero delle richieste:", error);
-        }
-    }; */
 
     const onSubmitRequest = (e) =>{
         e.preventDefault();
@@ -91,7 +36,7 @@ function HomePageUser() {
 
     const handleTransferRequest = async () => {
         if (!window.ethereum) {
-            alert("MetaMask non è installato!");
+            toastError('Attenzione, Metamask non è installato!');
             return;
         }
         try {
@@ -112,21 +57,21 @@ function HomePageUser() {
                 setContract(contract);
                 const tx = await contract.requestVehicle(carId, newOwner);
                 await tx.wait();
-                alert("Richiesta di trasferimento approvata!");
+                toastSuccess('Richiesta di trasferimento eseguita!');
             }else{
-                alert("User is a special User");
+                toastWarn('User is a special User!');
             }
 
         } catch (error) {
-            console.error("Errore nell'approvazione del trasferimento:", error);
-            alert("Errore nell'approvazione. Controlla la console.");
+            console.error("Errore nella richiesta del trasferimento:", error);
+            toastError('Errore nella richiesta di trasferimento.');
         }
     }
 
     // Funzione per approvare il trasferimento
     const handleApproveTransfer = async (carId) => {
         if (!window.ethereum) {
-            alert("MetaMask non è installato!");
+            toastError('Attenzione, Metamask non è installato!');
             return;
         }
 
@@ -154,23 +99,26 @@ function HomePageUser() {
                     if(newCID){
                         const tx = await contract.approveTransfer(carIdForApprove, newCID);
                         await tx.wait();
-                        alert("Trasferimento approvato!");
+                        toastSuccess('Trasferimento approvato!');
                     }
+                }else{
+                    toastWarn('Veicolo non trovato!');
                 }
 
             }else{
-                alert("User is a special User");
+                toastWarn('User is a special user!');
             }
 
         } catch (error) {
             console.error("Errore nell'approvazione del trasferimento:", error);
-            alert("Errore nell'approvazione. Controlla la console.");
+            toastError('Errore nell\'approvazione del trasferimento.');
         }
     };
 
     return (
         <div>
             <Header/>
+            <ToastContainer/>
             <div className="container" style={{
                 width: "50%",  // Imposta una larghezza per il div
                 margin: "auto", // Lo centra orizzontalmente
@@ -200,7 +148,7 @@ function HomePageUser() {
                             required
                         />
                     </label>
-                    <button type="submit">Invia Richiesta</button>
+                    <button className={"main-button"}  type="submit">Invia Richiesta</button>
                 </form>
             </div>
 
@@ -217,7 +165,7 @@ function HomePageUser() {
                         />
                     </label>
 
-                    <button type="submit">Verifica e Firma</button>
+                    <button className={"main-button"} type="submit">Verifica e Firma</button>
                 </form>
             </div>
         </div>

@@ -25,7 +25,7 @@ input[type="text"] {
     border-radius: 5px;
 }
 
-button {
+.main-button {
     padding: 10px;
     background: #A63E1B;
     color: white;
@@ -34,10 +34,10 @@ button {
     cursor: pointer;
 }
 
-button:hover {
+.main-button:hover {
     background: #E95D2C;
 }
 
-button:focus {
+.main-button:focus {
     outline: none;
 }

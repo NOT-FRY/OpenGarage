@@ -5,6 +5,8 @@ import {BrowserProvider, Contract} from "ethers";
 import {contractABI, contractAddress} from "../../utils/ContractUtils";
 import {checkRole} from "../../utils/Role";
 import {getVehicleDetails, sendDataToIpfs} from "../../utils/VehicleUtils";
+import {toast, ToastContainer} from "react-toastify";
+import {toastError, toastSuccess, toastWarn} from "../../utils/Toast";
 
 
 const InsuranceForm = () => {
@@ -29,7 +31,7 @@ const InsuranceForm = () => {
 
     const handleInsurance = async () => {
         if (!window.ethereum) {
-            alert("MetaMask non è installato!");
+            toastError('Attenzione, Metamask non è installato!');
             return;
         }
 
@@ -43,7 +45,7 @@ const InsuranceForm = () => {
             const isInsurer = await checkRole(contract.INSURER_ROLE(), signer);
 
             if (!isInsurer){
-                alert("L'utente non è un assicuratore");
+                toastWarn('L\' Utente non è un assicuratore!');
                 return;
             }
 
@@ -66,18 +68,24 @@ const InsuranceForm = () => {
                     const tx = await contract.updateVehicle(formData.carId, newCID);
                     await tx.wait();
                     console.log("nuovo CID:",newCID);
-                    alert("Sinistro inserito con successo");
+                    toastSuccess('Sinistro inserito con successo!');
+                }else{
+                    toastWarn('Errore durante l\'inserimento del sinistro!');
                 }
+            }else {
+                toastWarn('Veicolo non trovato');
             }
 
         } catch (error) {
             console.error("Errore nella modifica della manutenzione", error);
-            alert("Errore nella modifica della manutenzione.");
+            toastError('Errore nella modifica della manutenzione.');
         }
     };
 
     return (
+
         <div className="insurance-form-container">
+            <ToastContainer/>
             <h2>Registra un Sinistro Stradale</h2>
             <form onSubmit={handleSubmit} className="insurance-form">
                 <label>CarID del veicolo coinvolto:</label>
@@ -95,7 +103,7 @@ const InsuranceForm = () => {
                 <label>Costo stimato del danno (€):</label>
                 <input type="number" name="costoDanno" value={formData.costoDanno} onChange={handleChange} required/>
 
-                <button type="submit">Registra Sinistro</button>
+                <button className={"main-button"} type="submit">Registra Sinistro</button>
             </form>
         </div>
     );

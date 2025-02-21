@@ -8,6 +8,8 @@ import {useNavigate} from "react-router-dom";
 import Header from "../Header/Header";
 import "./vehicleDetails.css";
 import {getVehicleDetails} from "../../utils/VehicleUtils";
+import {toast, ToastContainer} from "react-toastify";
+import {toastError, toastWarn} from "../../utils/Toast";
 
 const VehicleDetails = ({ contract }) => {
     const [carId, setCarId] = useState("");
@@ -18,7 +20,7 @@ const VehicleDetails = ({ contract }) => {
         try {
             setLoading(true);
             if (!window.ethereum) {
-                alert("MetaMask non è installato!");
+                toastError('Attenzione, Metamask non è installato!');
                 return;
             }
 
@@ -29,6 +31,11 @@ const VehicleDetails = ({ contract }) => {
             const contract = new Contract(contractAddress, contractABI, signer);
 
             const data = await getVehicleDetails(contract, carId);
+
+            if(!data){
+                toastWarn('Veicolo non trovato!');
+                return;
+            }
             setVehicle(data.formData);
 
         } catch (error) {
@@ -41,6 +48,7 @@ const VehicleDetails = ({ contract }) => {
 
      return (
          <div className="container">
+             <ToastContainer />
             <h2>Dettagli Veicolo</h2>
             <div className="input-section">
                 <input
