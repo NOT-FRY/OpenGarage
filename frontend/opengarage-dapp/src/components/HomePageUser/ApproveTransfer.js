@@ -5,12 +5,13 @@ import React from "react";
 
 
 
-export default function RequestTransfer(props) {
+export default function ApproveTransfer(props) {
 
-    const { onClose, open, carId, handleCarId, newOwner, handleNewOwner, onSubmit} = props;
+    const { onClose, open, carId, handleCarId, onSubmit} = props;
 
     return (
         <Dialog open={open} onClose={onClose}>
+
             <Box
                 sx={{
                     width: "100%", // Larghezza del blocco (puoi modificarlo)
@@ -22,7 +23,7 @@ export default function RequestTransfer(props) {
                     borderRadius: 1,
                 }}
             >
-                <h2>Avvia il Passaggio di Proprietà</h2>
+                <h2>Inserisci il carId per approvare il trasferimento</h2>
                 <form onSubmit={onSubmit} className="transfer-form">
                     <label>
                         Car ID:
@@ -33,16 +34,8 @@ export default function RequestTransfer(props) {
                             required
                         />
                     </label>
-                    <label>
-                        Indirizzo Nuovo Proprietario:
-                        <input
-                            type="text"
-                            value={newOwner}
-                            onChange={(e) => handleNewOwner(e.target.value)}
-                            required
-                        />
-                    </label>
-                    <button className={"main-button"} type={'submit'}>Invia Richiesta</button>
+
+                    <button className={"main-button"} type={'submit'}>Verifica e Firma</button>
                 </form>
             </Box>
         </Dialog>

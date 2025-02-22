@@ -9,9 +9,10 @@ import {checkRole} from "../../utils/Role";
 import {getVehicleDetails, sendDataToIpfs} from "../../utils/VehicleUtils";
 import {toast, ToastContainer} from "react-toastify";
 import {toastError, toastSuccess, toastWarn} from "../../utils/Toast";
-import {Box, Button} from "@mui/material";
+import {Box, Button, Typography} from "@mui/material";
 import RequestTransfer from "./RequestTransfer";
 import {ChangeEvent} from "react";
+import ApproveTransfer from "./ApproveTransfer";
 
 function HomePageUser() {
     const [carId, setCarId] = useState("");
@@ -21,6 +22,8 @@ function HomePageUser() {
     const [contract, setContract] = useState(null);
     const [signer, setSigner] = useState(null);
     const [openDialogRequest, setOpenDialogRequest] = useState(false);
+    const [openDialogApprove, setOpenDialogApprove] = useState(false);
+
 
     const navigate = useNavigate();
 
@@ -38,6 +41,18 @@ function HomePageUser() {
 
     const handleNewOwner = (value : string) => {
         setNewOwner(value);
+    }
+
+    const handleDialogApproveOpen = () =>{
+        setOpenDialogApprove(true);
+    }
+
+    const handleDialogApproveClose = () =>{
+        setOpenDialogApprove(false);
+    }
+
+    const handleCarIdForApprove = (value : string) => {
+        setCarIdForApprove(value);
     }
 
     const onSubmitRequest = (e) =>{
@@ -139,61 +154,47 @@ function HomePageUser() {
         <Box sx={{
             width: '100%',
             height: '100vh'
-        }}>
+        }} alignContent={'center'}>
             {openDialogRequest &&
-                <RequestTransfer handleCarId={handleCarId} handleNewOwner = {handleNewOwner} open={openDialogRequest} carId={carId} newOwner={newOwner} onSubmit={onSubmitRequest} onClose = {handleDialogRequestClose}  />
+                <RequestTransfer handleCarId={handleCarId} handleNewOwner={handleNewOwner} open={openDialogRequest}
+                                 carId={carId} newOwner={newOwner} onSubmit={onSubmitRequest}
+                                 onClose={handleDialogRequestClose}/>
             }
-
+            {openDialogApprove &&
+                <ApproveTransfer handleCarId={handleCarIdForApprove} open={openDialogApprove} carId={carIdForApprove}
+                                 onSubmit={onSubmitApprove} onClose={handleDialogApproveClose}/>
+            }
+            <Box display={'flex'} justifyContent={'center'}>
+                <Typography variant="h5" gutterBottom fontFamily={'sans-serif'} fontWeight={'bold'} sx={{
+                    color: 'black'
+                }}>
+                    Passaggio di proprietà
+                </Typography>
+            </Box>
             <Box display={'flex'} justifyContent={'center'}>
                 <Button variant="contained" onClick={handleDialogRequestOpen} sx={{
                     borderColor: '#A63E1B',
-                    backgroundColor: '#A63E1B'
-                }} >
-                    Open simple dialog
+                    backgroundColor: '#A63E1B',
+                    marginRight: '30px',
+                }}>
+                    Avvia Nuovo
                 </Button>
 
-                <Button variant="contained" onClick={handleDialogRequestOpen} sx={{
+                <Button variant="contained" onClick={handleDialogApproveOpen} sx={{
                     borderColor: '#A63E1B',
                     backgroundColor: '#A63E1B'
-                }} >
-                    Open simple dialog
+                }}>
+                    Approva Passaggio
                 </Button>
 
             </Box>
 
 
             <ToastContainer/>
-            <div className="container" style={{
-                width: "50%",  // Imposta una larghezza per il div
-                margin: "auto", // Lo centra orizzontalmente
-                textAlign: "center", // Centra il testo all'interno
-                padding: "20px",
-                backgroundColor: 'transparent'
-            }}>
 
-            <div className="container">
-                <h2>Inserisci il carId per approvare il trasferimento</h2>
-                <form onSubmit={onSubmitApprove} className="transfer-form">
-                    <label>
-                        Car ID:
-                        <input
-                            type="text"
-                            value={carIdForApprove}
-                            onChange={(e) => setCarIdForApprove(e.target.value)}
-                            required
-                        />
-                    </label>
-
-                    <button className={"main-button"} type="submit">Verifica e Firma</button>
-                </form>
-            </div>
-        </div>
-
-
-
-</Box>
-)
-    ;
+        </Box>
+    )
+        ;
 }
 
 export default HomePageUser;

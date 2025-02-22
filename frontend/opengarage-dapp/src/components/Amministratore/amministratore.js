@@ -151,9 +151,9 @@ function Amministratore() {
                                     },
                                 }}
                             >
-                                <MenuItem value={'MANUFACTURER_ROLE'}>MANUFACTURER_ROLE</MenuItem>
-                                <MenuItem value={'MECHANIC_ROLE'}>MECHANIC_ROLE</MenuItem>
-                                <MenuItem value={'INSURER_ROLE'}>INSURER_ROLE</MenuItem>
+                                <MenuItem value={'MANUFACTURER_ROLE'}>CASA PRODUTTRICE</MenuItem>
+                                <MenuItem value={'MECHANIC_ROLE'}>MECCANICO</MenuItem>
+                                <MenuItem value={'INSURER_ROLE'}>ASSICURATORE</MenuItem>
                             </Select>
                         </FormControl>
                         <Button type={'submit'} variant="contained" size={'large'} sx={{

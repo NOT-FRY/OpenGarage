@@ -110,7 +110,7 @@ const MaintenanceForm = () => {
 
                 <div className="form-group">
                     <label>Note Aggiuntive:</label>
-                    <textarea name="notes" value={formData.note} onChange={handleChange}></textarea>
+                    <textarea name="note" value={formData.note} onChange={handleChange}></textarea>
                 </div>
 
                 <button className={"main-button"}  type="submit">Registra Manutenzione</button>

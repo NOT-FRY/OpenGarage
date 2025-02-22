@@ -5,6 +5,7 @@ import logo from './../../images/logo.png'
 import {Button} from "@mui/material";
 import {checkRole} from "../../utils/Role";
 import * as signer from "ethers";
+import {toastError} from "../../utils/Toast";
 
 
 const Header = () => {
@@ -15,7 +16,7 @@ const Header = () => {
 
     async function connectWallet() {
         if (!window.ethereum) {
-            setErrorAlert(true);
+            toastError("Attenzione, Metamask non è installato!");
         }
 
         try {

@@ -9,6 +9,7 @@ import {useNavigate} from "react-router-dom";
 import {sendDataToIpfs} from "../../utils/VehicleUtils";
 import {toast, ToastContainer} from "react-toastify";
 import {toastError, toastSuccess, toastWarn} from "../../utils/Toast";
+import {Box, Button} from "@mui/material";
 
 function CarForm(){
     const navigate = useNavigate();
@@ -198,7 +199,12 @@ function CarForm(){
                         onChange={handleChange}
                     />
                 </div>
-                <button type={"submit"}>Inserisci Veicolo</button>
+                <Box display='flex' justifyContent={'center'}>
+                <Button type={'submit'} variant="contained" size={'large'} sx={{
+                    backgroundColor: "#A63E1B"
+
+                }}>Conferma</Button>
+                </Box>
             </form>
 
 
