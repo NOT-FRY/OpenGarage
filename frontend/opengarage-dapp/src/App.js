@@ -5,6 +5,7 @@ import "./App.css";
 import LoginPage from "./components/Login/login"
 import {contractABI, contractAddress} from "./utils/ContractUtils";
 import {useEffect, useState} from "react";
+import {toast} from "react-toastify";
 
 
 // Funzione per connettere MetaMask

@@ -8,6 +8,7 @@ import {useNavigate} from "react-router-dom";
 import Header from "../Header/Header";
 import "./vehicleDetails.css";
 import {getVehicleDetails} from "../../utils/VehicleUtils";
+import {Box} from "@mui/material";
 import {toast, ToastContainer} from "react-toastify";
 import {toastError, toastWarn} from "../../utils/Toast";
 
@@ -47,6 +48,11 @@ const VehicleDetails = ({ contract }) => {
 
 
      return (
+         <Box sx={{
+             height: '100vh'
+         }}
+         alignContent={'center'}
+         >
          <div className="container">
              <ToastContainer />
             <h2>Dettagli Veicolo</h2>
@@ -116,6 +122,7 @@ const VehicleDetails = ({ contract }) => {
              )}
 
          </div>
+         </Box>
      )
  }
 

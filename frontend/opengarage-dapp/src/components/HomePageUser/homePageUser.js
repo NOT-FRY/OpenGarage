@@ -9,6 +9,9 @@ import {checkRole} from "../../utils/Role";
 import {getVehicleDetails, sendDataToIpfs} from "../../utils/VehicleUtils";
 import {toast, ToastContainer} from "react-toastify";
 import {toastError, toastSuccess, toastWarn} from "../../utils/Toast";
+import {Box, Button} from "@mui/material";
+import RequestTransfer from "./RequestTransfer";
+import {ChangeEvent} from "react";
 
 function HomePageUser() {
     const [carId, setCarId] = useState("");
@@ -17,8 +20,25 @@ function HomePageUser() {
     const [pendingTransfers, setPendingTransfers] = useState([]);
     const [contract, setContract] = useState(null);
     const [signer, setSigner] = useState(null);
+    const [openDialogRequest, setOpenDialogRequest] = useState(false);
 
     const navigate = useNavigate();
+
+    const handleDialogRequestOpen = () =>{
+        setOpenDialogRequest(true);
+    }
+
+    const handleDialogRequestClose = () =>{
+        setOpenDialogRequest(false);
+    }
+
+    const handleCarId = (value : string) => {
+        setCarId(value)
+    }
+
+    const handleNewOwner = (value : string) => {
+        setNewOwner(value);
+    }
 
     const onSubmitRequest = (e) =>{
         e.preventDefault();
@@ -116,8 +136,32 @@ function HomePageUser() {
     };
 
     return (
-        <div>
-            <Header/>
+        <Box sx={{
+            width: '100%',
+            height: '100vh'
+        }}>
+            {openDialogRequest &&
+                <RequestTransfer handleCarId={handleCarId} handleNewOwner = {handleNewOwner} open={openDialogRequest} carId={carId} newOwner={newOwner} onSubmit={onSubmitRequest} onClose = {handleDialogRequestClose}  />
+            }
+
+            <Box display={'flex'} justifyContent={'center'}>
+                <Button variant="contained" onClick={handleDialogRequestOpen} sx={{
+                    borderColor: '#A63E1B',
+                    backgroundColor: '#A63E1B'
+                }} >
+                    Open simple dialog
+                </Button>
+
+                <Button variant="contained" onClick={handleDialogRequestOpen} sx={{
+                    borderColor: '#A63E1B',
+                    backgroundColor: '#A63E1B'
+                }} >
+                    Open simple dialog
+                </Button>
+
+            </Box>
+
+
             <ToastContainer/>
             <div className="container" style={{
                 width: "50%",  // Imposta una larghezza per il div
@@ -126,31 +170,6 @@ function HomePageUser() {
                 padding: "20px",
                 backgroundColor: 'transparent'
             }}>
-
-            <div className="container">
-                <h2>Avvia il Passaggio di Proprietà</h2>
-                <form onSubmit={onSubmitRequest} className="transfer-form">
-                    <label>
-                        Car ID:
-                        <input
-                            type="text"
-                            value={carId}
-                            onChange={(e) => setCarId(e.target.value)}
-                            required
-                        />
-                    </label>
-                    <label>
-                        Indirizzo Nuovo Proprietario:
-                        <input
-                            type="text"
-                            value={newOwner}
-                            onChange={(e) => setNewOwner(e.target.value)}
-                            required
-                        />
-                    </label>
-                    <button className={"main-button"}  type="submit">Invia Richiesta</button>
-                </form>
-            </div>
 
             <div className="container">
                 <h2>Inserisci il carId per approvare il trasferimento</h2>
@@ -169,7 +188,10 @@ function HomePageUser() {
                 </form>
             </div>
         </div>
-</div>
+
+
+
+</Box>
 )
     ;
 }

@@ -58,8 +58,7 @@ export default function LoginPage(contract, signer) {
 
     return (
         <div>
-
-            <Header/>
+            
             <ToastContainer/>
 
         <div style={{
@@ -102,7 +101,6 @@ export default function LoginPage(contract, signer) {
                     justifyContent: 'center',
                     padding: '20px'
                 }}>
-
                     <div className="button-container">
                         <h2 style={{color:'black'}}>Login to OpenGarage</h2>
                         <button

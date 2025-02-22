@@ -89,7 +89,6 @@ function CarForm(){
 
     return (
         <div>
-            <Header/>
             <ToastContainer/>
             <form className={"form"}>
                 <div className="form-title">Indirizzo Proprietario</div>
@@ -199,7 +198,7 @@ function CarForm(){
                         onChange={handleChange}
                     />
                 </div>
-                <button className={"main-button"} type={"submit"}>Inserisci Veicolo</button>
+                <button type={"submit"}>Inserisci Veicolo</button>
             </form>
 
 
